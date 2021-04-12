@@ -12,13 +12,21 @@ import scala.collection.mutable.ArrayBuffer
 
 final case class Point(x: Int, y: Int) {
   def -(other: Point): Point = Point(this.x - other.x, this.y - other.y)
-  def +(other: Point): Point = Point(this.x - other.x, this.y - other.y)
+  def +(other: Point): Point = Point(this.x + other.x, this.y + other.y)
 }
 
 final case class Rect(x: Int, y: Int, width: Int, height: Int) {
   def contains(point: Point): Boolean = {
     (point.x >= this.x && point.x <= (this.x + this.width)) && (point.y >= this.y && point.y <= (this.y + this.height))
   }
+  def contains(rect: Rect): Boolean = {
+    rect.x < this.x + this.width &&
+    rect.x + rect.width > this.x &&
+    rect.y < this.y + this.height &&
+    rect.y + rect.height > this.y
+  }
+  def +(point: Point): Rect = Rect(this.x + point.x, this.y + point.y, this.width, this.height)
+  def -(point: Point): Rect = Rect(this.x - point.x, this.y - point.y, this.width, this.height)
 }
 
 object Game extends App {
@@ -34,8 +42,8 @@ object Game extends App {
   private var window: Ptr[Window]     = _
   private var renderer: Ptr[Renderer] = _
   private var bricks: List[Rect] = _
-  private var paddle: Point           = Point(30, 30)
-  private var ball: Point             = Point(40, 20)
+  private var paddle: Rect           = Rect(30, 30, 60, 20)
+  private var ball: Rect             = Rect(40, 20, 5, 5)
   private var ballVelocity: Point     = Point(0, 0)
   private var pressed                 = collection.mutable.Set.empty[Keycode]
 
@@ -61,11 +69,11 @@ object Game extends App {
   }
   def drawPaddle(): Unit = {
     setColor(200, 200, 200)
-    drawPoint(paddle, 60, 20)
+    drawRect(paddle)
   }
   def drawBall(): Unit = {
     setColor(255, 0, 255)
-    drawPoint(ball, 4, 4)
+    drawRect(ball)
   }
   def onDraw(): Unit = {
     setColor(0, 0, 0)
@@ -87,19 +95,19 @@ object Game extends App {
   def moveBall(): Unit = {
     ball = ball + ballVelocity
     if (ball.x < 0) {
-      ball = Point(0, ball.y)
+      ball = Rect(0, ball.y, ball.width, ball.height)
       ballVelocity = Point(-ballVelocity.x, ballVelocity.y)
     }
     if (ball.y < 0) {
-      ball = Point(ball.x, 0)
+      ball = Rect(ball.x, 0, ball.width, ball.height)
       ballVelocity = Point(ballVelocity.x, -ballVelocity.y)
     }
     if (ball.x > 799) {
-      ball = Point(799, ball.y)
+      ball = Rect(799, ball.y, ball.width, ball.height)
       ballVelocity = Point(-ballVelocity.x, ballVelocity.y)
     }
     if (ball.y > 799) {
-      ball = Point(ball.x, 799)
+      ball = Rect(ball.x, 799, ball.width, ball.height)
       ballVelocity = Point(ballVelocity.x, -ballVelocity.y)
     }
   }
@@ -139,8 +147,8 @@ object Game extends App {
 
   def newGame(): Unit = {
     bricks = (0 to 19).map { e => Rect(e * 40, 10, 30, 10) }.toList
-    paddle = Point(400, 700)
-    ball = Point(410, 695)
+    paddle = Rect(400, 700, 60, 20)
+    ball = Rect(410, 695, 5, 5)
     val r1 = 1 + rand.nextInt(( 8 - 1) + 1)
     val r2 = 1 + rand.nextInt(( 8 - 1) + 1)
     ballVelocity = Point(r1, r2)
