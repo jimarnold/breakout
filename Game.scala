@@ -8,9 +8,17 @@ import SDLKeys._
 import SDLConst._
 import SDLImplicits._
 
+import scala.collection.mutable.ArrayBuffer
+
 final case class Point(x: Int, y: Int) {
   def -(other: Point): Point = Point(this.x - other.x, this.y - other.y)
   def +(other: Point): Point = Point(this.x - other.x, this.y - other.y)
+}
+
+final case class Rect(x: Int, y: Int, width: Int, height: Int) {
+  def contains(point: Point): Boolean = {
+    (point.x >= this.x && point.x <= (this.x + this.width)) && (point.y >= this.y && point.y <= (this.y + this.height))
+  }
 }
 
 object Game extends App {
@@ -25,7 +33,7 @@ object Game extends App {
   private var running                 = true
   private var window: Ptr[Window]     = _
   private var renderer: Ptr[Renderer] = _
-  private var bricks: IndexedSeq[Point]     = _
+  private var bricks: List[Rect] = _
   private var paddle: Point           = Point(30, 30)
   private var ball: Point             = Point(40, 20)
   private var ballVelocity: Point     = Point(0, 0)
@@ -37,21 +45,27 @@ object Game extends App {
     SDL_RenderClear(renderer)
   def present(): Unit =
     SDL_RenderPresent(renderer)
-  def drawRect(xy: Point, w: Int, h: Int): Unit = {
-    val rect = stackalloc[Rect].init(xy.x, xy.y, w, h)
+  def drawPoint(xy: Point, w: Int, h: Int): Unit = {
+    val rect = stackalloc[SDL.Rect].init(xy.x, xy.y, w, h)
     SDL_RenderFillRect(renderer, rect)
   }
+
+  def drawRect(rect: Rect): Unit = {
+    val sdlRect = stackalloc[SDL.Rect].init(rect.x, rect.y, rect.width, rect.height)
+    SDL_RenderFillRect(renderer, sdlRect)
+  }
+
   def drawBricks(): Unit = {
     setColor(0, 150, 0)
-    bricks.foreach(brick => drawRect(brick, 30, 20))
+    bricks.foreach(brick => drawRect(brick))
   }
   def drawPaddle(): Unit = {
     setColor(200, 200, 200)
-    drawRect(paddle, 60, 20)
+    drawPoint(paddle, 60, 20)
   }
   def drawBall(): Unit = {
     setColor(255, 0, 255)
-    drawRect(ball, 4, 4)
+    drawPoint(ball, 4, 4)
   }
   def onDraw(): Unit = {
     setColor(0, 0, 0)
@@ -90,6 +104,12 @@ object Game extends App {
     }
   }
 
+  def hitTest(): Unit = {
+    val toRemove = ArrayBuffer.empty[Rect]
+    bricks.foreach(brick => if (brick.contains(ball)) toRemove += brick)
+    bricks = bricks diff toRemove.distinct
+  }
+
   def keyPressed(key: Keycode): Boolean =
     pressed.contains(key)
 
@@ -105,6 +125,7 @@ object Game extends App {
         else if (keyPressed(RIGHT_KEY)) Right
         else Stop)
       moveBall()
+      hitTest()
     }
   }
 
@@ -117,7 +138,7 @@ object Game extends App {
   }
 
   def newGame(): Unit = {
-    bricks = (0 to 19).map { e => Point(e * 40, 10) }
+    bricks = (0 to 19).map { e => Rect(e * 40, 10, 30, 10) }.toList
     paddle = Point(400, 700)
     ball = Point(410, 695)
     val r1 = 1 + rand.nextInt(( 8 - 1) + 1)
