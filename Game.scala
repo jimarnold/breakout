@@ -18,7 +18,7 @@ class Ball(var position: Vector, var velocity: Vector) {
   val width = 5
   val height = 5
   def update(elapsed: Float): Unit = {
-    position = position.plus(velocity.mult(elapsed))
+    position = position.plus(velocity.mult(elapsed * 0.2f))
     if (position.x < 0) {
       position = Vector(0, position.y)
       velocity = Vector(-velocity.x, velocity.y)
@@ -69,7 +69,6 @@ class Brick(var position: Vector) {
 }
 
 class Paddle(var position: Vector) {
-
   private val Left   = Vector(-1, 0)
   private val Right  = Vector(1, 0)
   private val Stop   = Vector(0, 0)
@@ -80,14 +79,14 @@ class Paddle(var position: Vector) {
       else if (pressed.contains(RIGHT_KEY)) Right
       else Stop
     val oldPos = position
-    position = position.plus(direction.mult(elapsed * 0.5f))
+    position = position.plus(direction.mult(elapsed * 0.05f))
     if (position.x < 0 || position.y < 0 || position.x > 799 || position.y > 799) {
       position = oldPos
     }
   }
   def draw(canvas: Canvas): Unit = {
     canvas.setColor(200, 200, 200)
-    canvas.drawRect(position, 60, 20)
+    canvas.drawRect(position, 120, 20)
   }
 }
 
@@ -164,7 +163,6 @@ object Game extends App {
     window = SDL_CreateWindow(title, 0, 0, width, height, WINDOW_SHOWN)
     renderer = SDL_CreateRenderer(window, -1, VSYNC)
     canvas = Canvas(renderer)
-    lastTick = System.nanoTime()
     newGame()
   }
 
@@ -180,9 +178,10 @@ object Game extends App {
     SDL_Delay(ms)
 
   def loop(): Unit = {
-    val elapsed = (System.nanoTime() - lastTick).toFloat / 1000
     val event = stackalloc[Event]
     while (running) {
+      val elapsed = (System.nanoTime() - lastTick).toFloat
+
       while (SDL_PollEvent(event) != 0) {
         event.type_ match {
           case QUIT =>
@@ -197,7 +196,7 @@ object Game extends App {
       }
       onDraw()
       onIdle(elapsed)
-      delay(20.toUInt)
+      lastTick = System.nanoTime()
     }
   }
 
