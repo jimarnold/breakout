@@ -1,4 +1,4 @@
-package breakout
+package mafs
 
 import scala.math.sqrt
 

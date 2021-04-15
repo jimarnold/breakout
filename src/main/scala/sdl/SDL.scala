@@ -1,6 +1,6 @@
 package sdl
 
-import scalanative.native._
+import scala.scalanative.native._
 
 @extern
 @link("SDL2")
