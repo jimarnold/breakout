@@ -14,11 +14,33 @@ final case class Rect(x: Float, y: Float, width: Float, height: Float) {
 
 }
 
+class Brick(var position: Vector) {
+  val width = 30
+  val height = 10
+  def contains(v: Vector): Boolean = {
+    (v.x >= position.x && v.x <= (position.x + width)) && (v.y >= position.y && v.y <= (position.y + height))
+  }
+  def contains(rect: Rect): Boolean = {
+    rect.x < position.x + width &&
+      rect.x + rect.width > position.x &&
+      rect.y < position.y + height &&
+      rect.y + rect.height > position.y
+  }
+  def update(): Unit = {
+
+  }
+  def draw(canvas: Canvas): Unit = {
+    canvas.setColor(0, 150, 0)
+    canvas.drawRect(position, 30, 10)
+  }
+}
+
 class Ball(var position: Vector, var velocity: Vector) {
   val width = 5
   val height = 5
+  val speed = 2000
   def update(elapsed: Float): Unit = {
-    position = position.plus(velocity.mult(elapsed * 0.2f))
+    position = position.plus(velocity.mult(elapsed * speed))
     if (position.x < 0) {
       position = Vector(0, position.y)
       velocity = Vector(-velocity.x, velocity.y)
@@ -47,31 +69,11 @@ class Ball(var position: Vector, var velocity: Vector) {
   }
 }
 
-class Brick(var position: Vector) {
-  val width = 30
-  val height = 10
-  def contains(v: Vector): Boolean = {
-    (v.x >= position.x && v.x <= (position.x + width)) && (v.y >= position.y && v.y <= (position.y + height))
-  }
-  def contains(rect: Rect): Boolean = {
-    rect.x < position.x + width &&
-      rect.x + rect.width > position.x &&
-      rect.y < position.y + height &&
-      rect.y + rect.height > position.y
-  }
-  def update(): Unit = {
-
-  }
-  def draw(canvas: Canvas): Unit = {
-    canvas.setColor(0, 150, 0)
-    canvas.drawRect(position, 30, 10)
-  }
-}
-
 class Paddle(var position: Vector) {
   private val Left   = Vector(-1, 0)
   private val Right  = Vector(1, 0)
   private val Stop   = Vector(0, 0)
+  val speed = 500
 
   def update(elapsed: Float, pressed: scala.collection.Set[Keycode]): Unit = {
     val direction =
@@ -79,7 +81,7 @@ class Paddle(var position: Vector) {
       else if (pressed.contains(RIGHT_KEY)) Right
       else Stop
     val oldPos = position
-    position = position.plus(direction.mult(elapsed * 0.05f))
+    position = position.plus(direction.mult(elapsed * speed))
     if (position.x < 0 || position.y < 0 || position.x > 799 || position.y > 799) {
       position = oldPos
     }
@@ -180,7 +182,9 @@ object Game extends App {
   def loop(): Unit = {
     val event = stackalloc[Event]
     while (running) {
-      val elapsed = (System.nanoTime() - lastTick).toFloat
+      val now = System.nanoTime()
+      val elapsed = (now - lastTick).toFloat  / 1000000000
+      lastTick = now
 
       while (SDL_PollEvent(event) != 0) {
         event.type_ match {
@@ -196,7 +200,6 @@ object Game extends App {
       }
       onDraw()
       onIdle(elapsed)
-      lastTick = System.nanoTime()
     }
   }
 
