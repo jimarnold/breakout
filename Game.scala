@@ -42,8 +42,12 @@ object Game extends App {
 
   def hitTest(): Unit = {
     val toRemove = ArrayBuffer.empty[Brick]
+    if (paddle.contains(ball.bounds())) {
+      ball.bounce(paddle.reflect(ball.position, ball.direction))
+    }
     bricks.foreach(brick => {
       if (brick.contains(ball.bounds())) {
+        ball.bounce(brick.reflect(ball.direction))
         toRemove += brick
       }
     })

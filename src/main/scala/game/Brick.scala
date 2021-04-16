@@ -11,10 +11,16 @@ class Brick(var position: Vector) {
   }
   def contains(rect: Rect): Boolean = {
     rect.x < position.x + width &&
-      rect.x + rect.width > position.x &&
-      rect.y < position.y + height &&
-      rect.y + rect.height > position.y
+    rect.x + rect.width > position.x &&
+    rect.y < position.y + height &&
+    rect.y + rect.height > position.y
   }
+
+  def reflect(v: Vector): Vector = {
+    val lowNormal = Vector(0, 1)
+    v.reflect(lowNormal)
+  }
+
   def update(): Unit = {
 
   }
