@@ -80,7 +80,7 @@ object Game extends App {
   }
 
   def newGame(): Unit = {
-    bricks = (0 to 19).map { e => new Brick(Vector(e * 40, 10)) }.toList
+    bricks = (0 to 9).map { e => new Brick(Vector(e * 80, 10)) }.toList
     paddle = new Paddle(Vector(400, 700))
     val r1 = 0.5f - rand.nextFloat()
     val r2 = -rand.nextFloat()

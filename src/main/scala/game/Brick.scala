@@ -4,8 +4,8 @@ import mafs.{Rect, Vector}
 import sdl.Canvas
 
 class Brick(var position: Vector) {
-  val width = 30
-  val height = 10
+  val width = 60
+  val height = 20
   def contains(v: Vector): Boolean = {
     (v.x >= position.x && v.x <= (position.x + width)) && (v.y >= position.y && v.y <= (position.y + height))
   }
@@ -26,6 +26,6 @@ class Brick(var position: Vector) {
   }
   def draw(canvas: Canvas): Unit = {
     canvas.setColor(0, 150, 0)
-    canvas.drawRect(position, 30, 10)
+    canvas.drawRect(position, width, height)
   }
 }
