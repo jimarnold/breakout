@@ -34,7 +34,7 @@ class Ball(var position: Vector, var direction: Vector) {
 
   def draw(canvas: Canvas): Unit = {
     canvas.setColor(255, 0, 255)
-    canvas.drawRect(position, 5, 5)
+    canvas.drawRect(bounds())
   }
 
   def bounds(): Rect = {

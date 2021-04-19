@@ -54,8 +54,23 @@ object SDLKeys {
 
 object SDLConst {
   val INIT_VIDEO   = 0x00000020.toUInt
-  val WINDOW_SHOWN = 0x00000004.toUInt
-  val VSYNC        = 0x00000004.toUInt
+}
+
+object SDLWindowFlags {
+  val SDL_WINDOW_FULLSCREEN: CUnsignedInt = 0x00000001.toUInt
+  val SDL_WINDOW_FULLSCREEN_DESKTOP: CUnsignedInt = SDL_WINDOW_FULLSCREEN | 0x00001000.toUInt
+  val SDL_WINDOW_SHOWN: CUnsignedInt = 0x00000004.toUInt
+}
+
+object SDLRenderFlags {
+  val SDL_RENDERER_SOFTWARE: CUnsignedInt = 0x00000001.toUInt
+  // The renderer is a software fallback
+  val SDL_RENDERER_ACCELERATED: CUnsignedInt = 0x00000002.toUInt
+  // The renderer uses hardware acceleration
+  val SDL_RENDERER_PRESENTVSYNC: CUnsignedInt = 0x00000004.toUInt
+  // Present is synchronized with the refresh rate
+  val SDL_RENDERER_TARGETTEXTURE: CUnsignedInt = 0x00000008.toUInt
+  // The renderer supports rendering to texture
 }
 
 object SDLImplicits {

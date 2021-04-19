@@ -3,12 +3,15 @@ package breakout
 import scalanative.native._
 import sdl._
 import SDL._
+import sdl.RGB
 import SDLEvents._
 import SDLKeys._
 import SDLConst._
 import SDLImplicits._
 import mafs._
 import game._
+import sdl.SDLRenderFlags.{SDL_RENDERER_ACCELERATED, SDL_RENDERER_PRESENTVSYNC}
+import sdl.SDLWindowFlags.SDL_WINDOW_SHOWN
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -27,6 +30,9 @@ object Game extends App {
   private var pressed                 = collection.mutable.Set.empty[Keycode]
   private var canvas: Canvas          = _
   private var lastTick: Long          = 0
+  private val brickColor1: RGB        = RGB(255, 0, 0)
+  private val brickColor2: RGB        = RGB(0, 0, 255)
+  private val brickColor3: RGB        = RGB(0, 255, 255)
 
   def drawBricks(): Unit = {
   }
@@ -42,12 +48,12 @@ object Game extends App {
 
   def hitTest(): Unit = {
     val toRemove = ArrayBuffer.empty[Brick]
-    if (paddle.contains(ball.bounds())) {
+    if (paddle.contains(ball.position)) {
       ball.bounce(paddle.reflect(ball.position, ball.direction))
     }
     bricks.foreach(brick => {
-      if (brick.contains(ball.bounds())) {
-        ball.bounce(brick.reflect(ball.direction))
+      if (brick.contains(ball.position)) {
+        ball.bounce(brick.reflect(ball.position, ball.direction))
         toRemove += brick
       }
     })
@@ -73,22 +79,20 @@ object Game extends App {
   def init(): Unit = {
     rand.setSeed(java.lang.System.nanoTime)
     SDL_Init(INIT_VIDEO)
-    window = SDL_CreateWindow(title, 0, 0, width, height, WINDOW_SHOWN)
-    renderer = SDL_CreateRenderer(window, -1, VSYNC)
+    window = SDL_CreateWindow(title, 0, 0, width, height, SDL_WINDOW_SHOWN)
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC)
     canvas = sdl.Canvas(renderer)
     newGame()
   }
 
   def newGame(): Unit = {
-    bricks = (0 to 9).map { e => new Brick(Vector(e * 80, 10)) }.toList
-    paddle = new Paddle(Vector(400, 700))
-    val r1 = 0.5f - rand.nextFloat()
-    val r2 = -rand.nextFloat()
-    ball = new Ball(Vector(410, 695), Vector(r1, r2))
+    var brickSeq = (0 to 9).map { e => new Brick(Rect(e * 80, 10, 60, 20), brickColor1) }
+    brickSeq ++= (0 to 9).map { e => new Brick(Rect(e * 80, 60, 60, 20), brickColor2) }
+    brickSeq ++= (0 to 9).map { e => new Brick(Rect(e * 80, 120, 60, 20), brickColor3) }
+    bricks = brickSeq.toList
+    paddle = new Paddle(Vector(400, 700), rand)
+    ball = new Ball(Vector(410, 695), Vector(0.5f, 0.5f))
   }
-
-  def delay(ms: UInt): Unit =
-    SDL_Delay(ms)
 
   def loop(): Unit = {
     val event = stackalloc[Event]

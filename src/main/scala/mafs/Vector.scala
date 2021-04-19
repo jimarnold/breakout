@@ -41,4 +41,8 @@ case class Vector(x: Float, y: Float) {
     val denominator = onto.dot(onto)
     onto.mult(numerator / denominator)
   }
+
+  def reverse(): Vector = {
+    Vector(-this.x, -this.y)
+  }
 }
