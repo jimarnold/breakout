@@ -48,12 +48,12 @@ object Game extends App {
 
   def hitTest(): Unit = {
     val toRemove = ArrayBuffer.empty[Brick]
-    if (paddle.contains(ball.position)) {
-      ball.bounce(paddle.reflect(ball.position, ball.direction))
+    if (paddle.contains(ball.bounds())) {
+      paddle.reflect(ball)
     }
     bricks.foreach(brick => {
-      if (brick.contains(ball.position)) {
-        ball.bounce(brick.reflect(ball.position, ball.direction))
+      if (brick.contains(ball.bounds())) {
+        brick.reflect(ball)
         toRemove += brick
       }
     })
@@ -86,11 +86,11 @@ object Game extends App {
   }
 
   def newGame(): Unit = {
-    var brickSeq = (0 to 9).map { e => new Brick(Rect(e * 80, 10, 60, 20), brickColor1) }
-    brickSeq ++= (0 to 9).map { e => new Brick(Rect(e * 80, 60, 60, 20), brickColor2) }
-    brickSeq ++= (0 to 9).map { e => new Brick(Rect(e * 80, 120, 60, 20), brickColor3) }
+    var brickSeq = (0 to 5).map { e => new Brick(Rect(e * 160, 10, 120, 20), brickColor1) }
+    brickSeq ++= (0 to 5).map { e => new Brick(Rect(e * 160, 60, 120, 20), brickColor2) }
+    brickSeq ++= (0 to 5).map { e => new Brick(Rect(e * 160, 120, 120, 20), brickColor3) }
     bricks = brickSeq.toList
-    paddle = new Paddle(Vector(400, 700), rand)
+    paddle = new Paddle(Vector(400, 700))
     ball = new Ball(Vector(410, 695), Vector(0.5f, 0.5f))
   }
 

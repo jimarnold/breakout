@@ -4,7 +4,7 @@ import scala.math.sqrt
 
 case class Vector(x: Float, y: Float) {
   def magnitude(): Float = {
-    sqrt((this.x * this.x) + (this.y + this.y)).toFloat
+    sqrt((this.x * this.x) + (this.y * this.y)).toFloat
   }
 
   def mult(b: Float): Vector = {
@@ -33,7 +33,7 @@ case class Vector(x: Float, y: Float) {
   }
 
   def reflect(n: Vector): Vector = {
-    this.minus(n.mult(2 * this.dot(n)))
+    this.minus(n.mult(2 * this.dot(n))).reverse()
   }
 
   def project(onto: Vector): Vector = {
@@ -44,5 +44,16 @@ case class Vector(x: Float, y: Float) {
 
   def reverse(): Vector = {
     Vector(-this.x, -this.y)
+  }
+
+  def rotate(degrees: Float): Vector = {
+    val theta = Math.toRadians(degrees)
+    val cs = Math.cos(theta).toFloat
+    val sn = Math.sin(theta).toFloat
+    Vector(x * cs - y * sn, x * sn + y * cs)
+  }
+
+  override def toString(): String = {
+    s"${x.toInt},${y.toInt}"
   }
 }

@@ -1,7 +1,9 @@
 package mafs
 
-class Line(var p1: Vector, var p2: Vector) {
-
+final case class Line(p1: Vector, p2: Vector) {
+  override def toString() : String = {
+    s"p1:$p1, p2:$p2"
+  }
 }
 
 object Line {

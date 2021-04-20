@@ -34,6 +34,7 @@ object SDL {
                              b: UByte,
                              a: UByte): Unit = extern
   def SDL_RenderFillRect(renderer: Ptr[Renderer], rect: Ptr[Rect]): Unit = extern
+  def SDL_RenderDrawLine(renderer: Ptr[Renderer], x1: CInt, y1: CInt, x2: CInt, y2: CInt): Unit = extern
   def SDL_RenderPresent(renderer: Ptr[Renderer]): Unit = extern
 }
 

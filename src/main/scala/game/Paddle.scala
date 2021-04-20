@@ -6,13 +6,14 @@ import sdl.Canvas
 import sdl.SDL.Keycode
 import sdl.SDLKeys.{LEFT_KEY, RIGHT_KEY}
 
-class Paddle(var position: Vector, rand: java.util.Random) extends Hittable {
+class Paddle(var position: Vector) extends Hittable {
   private val Left = Vector(-1, 0)
   private val Right = Vector(1, 0)
   private val Stop = Vector(0, 0)
   val speed = 500
   val width = 120
   val height = 20
+  spin = true
 
   def update(elapsed: Float, pressed: scala.collection.Set[Keycode]): Unit = {
     val direction =

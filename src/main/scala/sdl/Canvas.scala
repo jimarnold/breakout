@@ -21,4 +21,8 @@ case class Canvas(renderer: Ptr[Renderer]) {
     val sdlRect = stackalloc[SDL.Rect].init(rect.x.toInt, rect.y.toInt, rect.width.toInt, rect.height.toInt)
     SDL_RenderFillRect(renderer, sdlRect)
   }
+
+  def drawLine(line: mafs.Line): Unit = {
+    SDL_RenderDrawLine(renderer, line.p1.x.toInt, line.p1.y.toInt, line.p2.x.toInt, line.p2.y.toInt)
+  }
 }
