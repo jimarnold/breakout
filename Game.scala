@@ -79,7 +79,7 @@ object Game extends App {
   def newGame(): Unit = {
     wall = new Wall
     paddle = new Paddle(Vector(400, 700))
-    ball = new Ball(Vector(410, 695), Vector(0.5f, 0.5f))
+    ball = new Ball(Vector(800, 240), Vector(-0.5f, 0.5f))
   }
 
   def run(): Unit = {

@@ -13,7 +13,7 @@ class Paddle(var position: Vector) extends Hittable {
   }
 
   def draw(canvas: Canvas): Unit = {
-    canvas.setColor(200, 200, 200)
+    canvas.setColor(Color.two)
     canvas.drawRect(bounds())
   }
 

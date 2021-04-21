@@ -4,11 +4,11 @@ import mafs.{Line, Rect, Vector}
 import sdl.Canvas
 
 class Ball(var position: Vector, var direction: Vector) {
-  val width = 5
-  val halfWidth = 2.5f
-  val height = 5
-  val halfHeight = 2.5f
-  val speed = 600
+  val width = 10
+  val halfWidth = 5f
+  val height = 10
+  val halfHeight = 5f
+  val speed = 1000
   private var previousPosition = position
 
   def update(elapsed: Float): Unit = {
@@ -38,7 +38,23 @@ class Ball(var position: Vector, var direction: Vector) {
   }
 
   def draw(canvas: Canvas): Unit = {
-    canvas.setColor(255, 0, 255)
+    val color = position.y match {
+      case y if y < 60 =>
+        Color.one
+      case y if y < 80 =>
+        Color.two
+      case y if y < 100 =>
+        Color.three
+      case y if y < 120 =>
+        Color.four
+      case y if y < 140 =>
+        Color.five
+      case y if y < 160 =>
+        Color.six
+      case _ =>
+        Color.two
+    }
+    canvas.setColor(color)
     canvas.drawRect(bounds())
   }
 
