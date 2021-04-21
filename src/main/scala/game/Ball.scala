@@ -1,7 +1,7 @@
 package game
 
 import mafs.{Line, Rect, Vector}
-import sdl.Canvas
+import sdl.{Canvas, RGB}
 
 class Ball(var position: Vector, var direction: Vector) {
   val width = 10
@@ -27,8 +27,8 @@ class Ball(var position: Vector, var direction: Vector) {
       position = Vector(799, position.y)
       direction = Vector(-direction.x, direction.y)
     }
-    if (position.y > 799) {
-      position = Vector(position.x, 799)
+    if (position.y > 599) {
+      position = Vector(position.x, 599)
       direction = Vector(direction.x, -direction.y)
     }
   }

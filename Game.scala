@@ -16,7 +16,7 @@ object Game extends App {
   private val rand   = new java.util.Random
   private val title  = c"Game"
   private val width  = 800
-  private val height = 800
+  private val height = 600
 
   private var running                 = true
   private var window: Ptr[Window]     = _
@@ -79,7 +79,7 @@ object Game extends App {
 
   def newGame(): Unit = {
     wall = new Wall
-    paddle = new Paddle(Vector(400, 700))
+    paddle = new Paddle(Vector(400, 500))
     ball = new Ball(Vector(800, 240), Vector(-0.5f, 0.5f))
   }
 
