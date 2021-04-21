@@ -70,6 +70,7 @@ object Game extends App {
     rand.setSeed(java.lang.System.nanoTime)
     SDL_Init(INIT_VIDEO)
     SDL_ShowCursor(SDL_DISABLE)
+    SDL_SetRelativeMouseMode(SDL_TRUE)
     window = SDL_CreateWindow(title, 0, 0, width, height, SDL_WINDOW_SHOWN)
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC)
     canvas = sdl.Canvas(renderer)

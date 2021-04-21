@@ -14,6 +14,7 @@ object SDL {
   type Keysym   = CStruct4[Scancode, Keycode, UShort, UInt]
   type Scancode = Int
   type Keycode  = Int
+  type SDL_bool = Int
 
   def SDL_Init(flags: UInt): Unit = extern
   def SDL_CreateWindow(title: CString,
@@ -40,6 +41,7 @@ object SDL {
   def SDL_GetMouseState(x: Ptr[CInt], y: Ptr[CInt]): CInt = extern
 
   def SDL_ShowCursor(toggle: CInt): Unit = extern
+  def SDL_SetRelativeMouseMode(enabled: SDL_bool): CInt = extern
 }
 
 object SDLEvents {
@@ -61,6 +63,8 @@ object SDLConst {
   val INIT_VIDEO   = 0x00000020.toUInt
   val SDL_DISABLE = 0
   val SDL_ENABLE = 0
+  val SDL_FALSE = 0
+  val SDL_TRUE = 1
 }
 
 object SDLWindowFlags {
