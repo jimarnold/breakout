@@ -36,6 +36,10 @@ object SDL {
   def SDL_RenderFillRect(renderer: Ptr[Renderer], rect: Ptr[Rect]): Unit = extern
   def SDL_RenderDrawLine(renderer: Ptr[Renderer], x1: CInt, y1: CInt, x2: CInt, y2: CInt): Unit = extern
   def SDL_RenderPresent(renderer: Ptr[Renderer]): Unit = extern
+
+  def SDL_GetMouseState(x: Ptr[CInt], y: Ptr[CInt]): CInt = extern
+
+  def SDL_ShowCursor(toggle: CInt): Unit = extern
 }
 
 object SDLEvents {
@@ -55,6 +59,8 @@ object SDLKeys {
 
 object SDLConst {
   val INIT_VIDEO   = 0x00000020.toUInt
+  val SDL_DISABLE = 0
+  val SDL_ENABLE = 0
 }
 
 object SDLWindowFlags {

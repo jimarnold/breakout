@@ -53,6 +53,14 @@ case class Vector(x: Float, y: Float) {
     Vector(x * cs - y * sn, x * sn + y * cs)
   }
 
+  def angleBetween(v: Vector): Double = {
+    val dot = this.dot(v)
+    val mag1 = this.magnitude()
+    val mag2 = v.magnitude()
+
+    Math.toDegrees(Math.acos(dot / (mag1 * mag2)))
+  }
+
   override def toString(): String = {
     s"${x.toInt},${y.toInt}"
   }

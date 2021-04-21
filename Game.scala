@@ -3,7 +3,6 @@ package breakout
 import scalanative.native._
 import sdl._
 import SDL._
-import sdl.RGB
 import SDLEvents._
 import SDLKeys._
 import SDLConst._
@@ -12,8 +11,6 @@ import mafs._
 import game._
 import sdl.SDLRenderFlags.{SDL_RENDERER_ACCELERATED, SDL_RENDERER_PRESENTVSYNC}
 import sdl.SDLWindowFlags.SDL_WINDOW_SHOWN
-
-import scala.collection.mutable.ArrayBuffer
 
 object Game extends App {
   private val rand   = new java.util.Random
@@ -24,15 +21,12 @@ object Game extends App {
   private var running                 = true
   private var window: Ptr[Window]     = _
   private var renderer: Ptr[Renderer] = _
-  private var bricks: List[Brick]     = _
+  private var wall: Wall              = _
   private var paddle: Paddle          = _
   private var ball: Ball              = _
   private var pressed                 = collection.mutable.Set.empty[Keycode]
   private var canvas: Canvas          = _
   private var lastTick: Long          = 0
-  private val brickColor1: RGB        = RGB(255, 0, 0)
-  private val brickColor2: RGB        = RGB(0, 0, 255)
-  private val brickColor3: RGB        = RGB(0, 255, 255)
 
   def drawBricks(): Unit = {
   }
@@ -40,24 +34,17 @@ object Game extends App {
   def onDraw(): Unit = {
     canvas.setColor(0, 0, 0)
     canvas.clear()
-    bricks.foreach(brick => brick.draw(canvas))
+    wall.draw(canvas)
     paddle.draw(canvas)
     ball.draw(canvas)
     canvas.present()
   }
 
   def hitTest(): Unit = {
-    val toRemove = ArrayBuffer.empty[Brick]
     if (paddle.contains(ball.bounds())) {
       paddle.reflect(ball)
     }
-    bricks.foreach(brick => {
-      if (brick.contains(ball.bounds())) {
-        brick.reflect(ball)
-        toRemove += brick
-      }
-    })
-    bricks = bricks diff toRemove.distinct
+    wall.hitTest(ball)
   }
 
   def keyPressed(key: Keycode): Boolean =
@@ -70,7 +57,10 @@ object Game extends App {
     if (keyPressed(SPACE)) {
       newGame()
     } else {
-      paddle.update(elapsed, pressed)
+      val x = stackalloc[CInt]
+      val y = stackalloc[CInt]
+      SDL_GetMouseState(x, y)
+      paddle.update(elapsed, !x)
       ball.update(elapsed)
       hitTest()
     }
@@ -79,6 +69,7 @@ object Game extends App {
   def init(): Unit = {
     rand.setSeed(java.lang.System.nanoTime)
     SDL_Init(INIT_VIDEO)
+    SDL_ShowCursor(SDL_DISABLE)
     window = SDL_CreateWindow(title, 0, 0, width, height, SDL_WINDOW_SHOWN)
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC)
     canvas = sdl.Canvas(renderer)
@@ -86,19 +77,16 @@ object Game extends App {
   }
 
   def newGame(): Unit = {
-    var brickSeq = (0 to 5).map { e => new Brick(Rect(e * 160, 10, 120, 20), brickColor1) }
-    brickSeq ++= (0 to 5).map { e => new Brick(Rect(e * 160, 60, 120, 20), brickColor2) }
-    brickSeq ++= (0 to 5).map { e => new Brick(Rect(e * 160, 120, 120, 20), brickColor3) }
-    bricks = brickSeq.toList
+    wall = new Wall
     paddle = new Paddle(Vector(400, 700))
     ball = new Ball(Vector(410, 695), Vector(0.5f, 0.5f))
   }
 
-  def loop(): Unit = {
+  def run(): Unit = {
     val event = stackalloc[Event]
     while (running) {
       val now = System.nanoTime()
-      val elapsed = (now - lastTick).toFloat  / 1000000000
+      val elapsed = (now - lastTick).toFloat / 1000000000
       lastTick = now
 
       while (SDL_PollEvent(event) != 0) {
@@ -119,6 +107,6 @@ object Game extends App {
   }
 
   init()
-  loop()
+  run()
 }
 

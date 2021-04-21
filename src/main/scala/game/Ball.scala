@@ -40,8 +40,6 @@ class Ball(var position: Vector, var direction: Vector) {
   def draw(canvas: Canvas): Unit = {
     canvas.setColor(255, 0, 255)
     canvas.drawRect(bounds())
-    canvas.setColor(255, 255, 255)
-    canvas.drawLine(this.progressLine())
   }
 
   def bounds(): Rect = {
