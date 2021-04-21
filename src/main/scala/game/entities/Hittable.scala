@@ -4,9 +4,6 @@ import game.Ball
 import mafs.{Line, Rect, Vector}
 
 trait Hittable {
-  var spin = false
-  val maxSpinAngle = 20
-
   def bounds(): Rect
 
   def contains(other: Rect): Boolean = {
@@ -24,14 +21,7 @@ trait Hittable {
     val normal = if (Line.doIntersect(incomingLine, bottom)) {
       Vector(1, 0)
     } else if (Line.doIntersect(incomingLine, top)) {
-      val n = Vector(1, 0)
-      if (spin) {
-        val myCenter = bounds.x + (bounds.width / 2)
-        val angle = ((incomingLine.p2.x - myCenter) / bounds.width) * maxSpinAngle
-        n.rotate(angle)
-      } else {
-        n
-      }
+      Vector(1, 0)
     } else if (Line.doIntersect(incomingLine, left)) {
       Vector(0, 1)
     } else if (Line.doIntersect(incomingLine, right)) {
