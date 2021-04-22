@@ -13,6 +13,8 @@ class Wall {
   private val brickColor5: RGB        = RGB(95, 155, 85)
   private val brickColor6: RGB        = RGB(75, 85, 200)
   private val columns = 17 // 0-based
+  private val removed = ArrayBuffer.empty[Brick]
+
   val xOffset = 50
   val yOffset = 20
   val brickWidth = 50
@@ -33,14 +35,17 @@ class Wall {
 
   def hitTest(ball: Ball): Unit = {
     if (ball.position.y < 160) {
-      val toRemove = ArrayBuffer.empty[Brick]
       bricks.foreach(brick => {
         if (brick.contains(ball.bounds())) {
           brick.reflect(ball)
-          toRemove += brick
+          removed += brick
         }
       })
-      bricks = bricks diff toRemove.distinct
+      bricks = bricks diff removed.distinct
     }
+  }
+
+  def hits(): Int = {
+    removed.size
   }
 }

@@ -13,7 +13,6 @@ import sdl.SDLRenderFlags.{SDL_RENDERER_ACCELERATED, SDL_RENDERER_PRESENTVSYNC}
 import sdl.SDLWindowFlags.SDL_WINDOW_SHOWN
 
 object Game extends App {
-  private val rand   = new java.util.Random
   private val title  = c"Game"
   private val width  = 800
   private val height = 600
@@ -27,6 +26,7 @@ object Game extends App {
   private var pressed                 = collection.mutable.Set.empty[Keycode]
   private var canvas: Canvas          = _
   private var lastTick: Long          = 0
+  private var lives                   = 3
 
   def drawBricks(): Unit = {
   }
@@ -50,6 +50,16 @@ object Game extends App {
   def keyPressed(key: Keycode): Boolean =
     pressed.contains(key)
 
+  def checkWinOrLose() = {
+    if (ball.position.y >= height) {
+      lives-= 1
+      newBall()
+    }
+    if (lives == 0) {
+      running = false
+    }
+  }
+
   def onIdle(elapsed: Float): Unit = {
     if (keyPressed(ESCAPE)) {
       running = false
@@ -63,11 +73,12 @@ object Game extends App {
       paddle.update(elapsed, !x)
       ball.update(elapsed)
       hitTest()
+      checkWinOrLose()
+      ball.setSpeed(wall.hits())
     }
   }
 
   def init(): Unit = {
-    rand.setSeed(java.lang.System.nanoTime)
     SDL_Init(INIT_VIDEO)
     SDL_ShowCursor(SDL_DISABLE)
     SDL_SetRelativeMouseMode(SDL_TRUE)
@@ -79,7 +90,11 @@ object Game extends App {
 
   def newGame(): Unit = {
     wall = new Wall
-    paddle = new Paddle(Vector(400, 500))
+    paddle = new Paddle(Vector(600, 560))
+    newBall()
+  }
+
+  def newBall(): Unit = {
     ball = new Ball(Vector(800, 240), Vector(-0.5f, 0.5f))
   }
 

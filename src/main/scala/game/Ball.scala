@@ -1,20 +1,23 @@
 package game
 
 import mafs.{Line, Rect, Vector}
-import sdl.{Canvas, RGB}
+import sdl.Canvas
 
 class Ball(var position: Vector, var direction: Vector) {
-  val width = 10
-  val halfWidth = 5f
-  val height = 10
-  val halfHeight = 5f
-  val speed = 1000
+
+  private val width = 10
+  private val halfWidth = width / 2f
+  private val height = 10
+  private val halfHeight = height / 2f
   private var previousPosition = position
+
+  private var speed = 500
 
   def update(elapsed: Float): Unit = {
     previousPosition = position
 
     position = position.plus(direction.mult(elapsed * speed))
+
     if (position.x < 0) {
       position = Vector(0, position.y)
       direction = Vector(-direction.x, direction.y)
@@ -27,14 +30,10 @@ class Ball(var position: Vector, var direction: Vector) {
       position = Vector(799, position.y)
       direction = Vector(-direction.x, direction.y)
     }
-    if (position.y > 599) {
-      position = Vector(position.x, 599)
-      direction = Vector(direction.x, -direction.y)
-    }
   }
 
   def bounce(normal: Vector): Unit = {
-    direction = direction.reflect(normal)
+    direction = direction.reflect(normal).normalize()
   }
 
   def draw(canvas: Canvas): Unit = {
@@ -66,5 +65,14 @@ class Ball(var position: Vector, var direction: Vector) {
     val lenAB = Math.sqrt(Math.pow(previousPosition.x - position.x, 2.0) + Math.pow(previousPosition.y - position.y, 2.0)).toFloat
     val end = Vector(position.x + (position.x - previousPosition.x) / lenAB * 5, position.y + (position.y - previousPosition.y) / lenAB * 5)
     new Line(previousPosition, end)
+  }
+
+  def setSpeed(hits: Int): Unit = {
+    if (hits >= 4) {
+      speed = 600
+    }
+    if (hits >= 12) {
+      speed = 700
+    }
   }
 }
