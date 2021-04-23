@@ -14,7 +14,7 @@ import sdl.SDLWindowFlags.SDL_WINDOW_SHOWN
 
 object Game extends App {
   private val title  = c"Game"
-  private val width  = 800
+  private val width  = 1000
   private val height = 600
 
   private var running                 = true

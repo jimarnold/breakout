@@ -15,21 +15,7 @@ class Ball(var position: Vector, var direction: Vector) {
 
   def update(elapsed: Float): Unit = {
     previousPosition = position
-
     position = position.plus(direction.mult(elapsed * speed))
-
-    if (position.x < 0) {
-      position = Vector(0, position.y)
-      direction = Vector(-direction.x, direction.y)
-    }
-    if (position.y < 0) {
-      position = Vector(position.x, 0)
-      direction = Vector(direction.x, -direction.y)
-    }
-    if (position.x > 799) {
-      position = Vector(799, position.y)
-      direction = Vector(-direction.x, direction.y)
-    }
   }
 
   def bounce(normal: Vector): Unit = {
@@ -38,17 +24,17 @@ class Ball(var position: Vector, var direction: Vector) {
 
   def draw(canvas: Canvas): Unit = {
     val color = position.y match {
-      case y if y < 60 =>
-        Color.one
-      case y if y < 80 =>
-        Color.two
-      case y if y < 100 =>
-        Color.three
       case y if y < 120 =>
-        Color.four
+        Color.one
       case y if y < 140 =>
-        Color.five
+        Color.two
       case y if y < 160 =>
+        Color.three
+      case y if y < 180 =>
+        Color.four
+      case y if y < 200 =>
+        Color.five
+      case y if y < 220 =>
         Color.six
       case _ =>
         Color.ball
