@@ -30,6 +30,7 @@ class Wall(val gameField: Rect) {
     if (ball.position.y < 220) {
       bricks.foreach(brick => {
         if (brick.contains(ball.bounds())) {
+          Sound.brickBeep(brick.color)
           brick.reflect(ball)
           removed += brick
         }

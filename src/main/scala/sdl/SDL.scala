@@ -3,6 +3,11 @@ package sdl
 import scala.scalanative.native._
 
 @extern
+object libc {
+  def system(command: CString): CInt = extern
+}
+
+@extern
 @link("SDL2")
 object SDL {
   type Window   = CStruct0
@@ -42,6 +47,7 @@ object SDL {
 
   def SDL_ShowCursor(toggle: CInt): Unit = extern
   def SDL_SetRelativeMouseMode(enabled: SDL_bool): CInt = extern
+  def SDL_GetError(): CString = extern
 }
 
 object SDLEvents {
@@ -60,7 +66,7 @@ object SDLKeys {
 }
 
 object SDLConst {
-  val INIT_VIDEO   = 0x00000020.toUInt
+  val SDL_INIT_VIDEO   = 0x00000020.toUInt
   val SDL_DISABLE = 0
   val SDL_ENABLE = 0
   val SDL_FALSE = 0

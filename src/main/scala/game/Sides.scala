@@ -14,9 +14,11 @@ class Sides(val screenWidth: Int, val screenHeight: Int) {
       rightSide.isOverlapping(ball.bounds())) {
       val normal = Vector(0, 1)
       ball.bounce(normal)
+      Sound.sideBeep()
     } else if (ceiling.isOverlapping(ball.bounds())) {
       val normal = Vector(1, 0)
       ball.bounce(normal)
+      Sound.topBeep()
     }
   }
 

@@ -4,7 +4,8 @@ import game.entities.Hittable
 import mafs.{Line, Rect, Vector}
 import sdl.{Canvas, RGB}
 
-class Brick(bounds: Rect, color: RGB) extends Hittable {
+class Brick(bounds: Rect, val color: RGB) extends Hittable {
+
   def draw(canvas: Canvas): Unit = {
     canvas.setColor(color)
     canvas.drawRect(bounds())
