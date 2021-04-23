@@ -4,17 +4,24 @@ import game.entities.Hittable
 import mafs.{Rect, Vector}
 import sdl.Canvas
 
-class Paddle(var position: Vector) extends Hittable {
+class Paddle(var position: Vector, gameField: Rect) extends Hittable {
   private val width = 120
   private val halfWidth = width / 2
   private val height = 20
 
   def update(elapsed: Float, x: Int): Unit = {
     position = Vector(x, position.y)
+
+    if (position.x + width > gameField.x + gameField.width) {
+      position = Vector((gameField.x + gameField.width) - width, position.y)
+    }
+    if (position.x < gameField.x) {
+      position = Vector(gameField.x, position.y)
+    }
   }
 
   def draw(canvas: Canvas): Unit = {
-    canvas.setColor(Color.two)
+    canvas.setColor(Color.paddle)
     canvas.drawRect(bounds())
   }
 

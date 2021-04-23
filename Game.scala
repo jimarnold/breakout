@@ -21,6 +21,7 @@ object Game extends App {
   private var window: Ptr[Window]     = _
   private var renderer: Ptr[Renderer] = _
   private var wall: Wall              = _
+  private var sides: Sides              = _
   private var paddle: Paddle          = _
   private var ball: Ball              = _
   private var pressed                 = collection.mutable.Set.empty[Keycode]
@@ -34,6 +35,7 @@ object Game extends App {
   def onDraw(): Unit = {
     canvas.setColor(0, 0, 0)
     canvas.clear()
+    sides.draw(canvas)
     wall.draw(canvas)
     paddle.draw(canvas)
     ball.draw(canvas)
@@ -45,6 +47,7 @@ object Game extends App {
       paddle.reflect(ball)
     }
     wall.hitTest(ball)
+    sides.hitTest(ball)
   }
 
   def keyPressed(key: Keycode): Boolean =
@@ -56,6 +59,9 @@ object Game extends App {
       newBall()
     }
     if (lives == 0) {
+      running = false
+    }
+    if (wall.isDestroyed) {
       running = false
     }
   }
@@ -74,7 +80,7 @@ object Game extends App {
       ball.update(elapsed)
       hitTest()
       checkWinOrLose()
-      ball.setSpeed(wall.hits())
+      ball.setSpeed(wall.hits)
     }
   }
 
@@ -89,13 +95,16 @@ object Game extends App {
   }
 
   def newGame(): Unit = {
-    wall = new Wall
-    paddle = new Paddle(Vector(600, 560))
+    sides = new Sides(width, height)
+    val gameField = Rect(sides.width, sides.width, width - (sides.width * 2), height - sides.width)
+    wall = new Wall(gameField)
+
+    paddle = new Paddle(Vector(600, 580), gameField)
     newBall()
   }
 
   def newBall(): Unit = {
-    ball = new Ball(Vector(800, 240), Vector(-0.5f, 0.5f))
+    ball = new Ball(Vector(width - (sides.width * 2), 240), Vector(-0.5f, 0.5f))
   }
 
   def run(): Unit = {

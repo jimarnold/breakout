@@ -51,7 +51,7 @@ class Ball(var position: Vector, var direction: Vector) {
       case y if y < 160 =>
         Color.six
       case _ =>
-        Color.two
+        Color.ball
     }
     canvas.setColor(color)
     canvas.drawRect(bounds())
