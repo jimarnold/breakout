@@ -85,7 +85,7 @@ object Game extends App {
     } else {
       val x = stackalloc[CInt]
       val y = stackalloc[CInt]
-      SDL_GetMouseState(x, y)
+      SDL_GetRelativeMouseState(x, y)
       paddle.update(elapsed, !x)
       ball.update(elapsed)
       hitTest()
@@ -110,7 +110,7 @@ object Game extends App {
     val gameField = Rect(sides.width, sides.width, width - (sides.width * 2), height - sides.width)
     wall = new Wall(gameField)
 
-    paddle = new Paddle(Vector(600, 580), gameField)
+    paddle = new Paddle(Vector(width / 2, 580), gameField)
     newBall()
   }
 

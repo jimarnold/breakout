@@ -43,8 +43,7 @@ object SDL {
   def SDL_RenderDrawLine(renderer: Ptr[Renderer], x1: CInt, y1: CInt, x2: CInt, y2: CInt): Unit = extern
   def SDL_RenderPresent(renderer: Ptr[Renderer]): Unit = extern
 
-  def SDL_GetMouseState(x: Ptr[CInt], y: Ptr[CInt]): CInt = extern
-
+  def SDL_GetRelativeMouseState(x: Ptr[CInt], y: Ptr[CInt]): CInt = extern
   def SDL_ShowCursor(toggle: CInt): Unit = extern
   def SDL_SetRelativeMouseMode(enabled: SDL_bool): CInt = extern
   def SDL_GetError(): CString = extern

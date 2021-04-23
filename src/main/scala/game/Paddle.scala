@@ -10,7 +10,7 @@ class Paddle(var position: Vector, gameField: Rect) extends Hittable {
   private val height = 20
 
   def update(elapsed: Float, x: Int): Unit = {
-    position = Vector(x, position.y)
+    position = Vector(position.x + x, position.y)
 
     if (position.x + width > gameField.x + gameField.width) {
       position = Vector((gameField.x + gameField.width) - width, position.y)
