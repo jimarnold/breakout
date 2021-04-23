@@ -1,26 +1,27 @@
 package game
 
 import mafs.Rect
-import sdl.Canvas
+import sdl.{Canvas, RGB}
+
 import scala.collection.mutable.ArrayBuffer
 
 class Wall(val gameField: Rect) {
   private var bricks: List[Brick] = _
   private val columns = 17 // 0-based
   private val removed = ArrayBuffer.empty[Brick]
-  private val yOffset = 20
   private val brickWidth = gameField.width / 18f
   private val brickHeight = 20
-
+  private val initialHeight = gameField.y + 30
   private var brickSeq = IndexedSeq.empty[Brick]
 
-  brickSeq ++= (0 to columns).map { e => new Brick(Rect(gameField.x + (e * brickWidth), 5 * yOffset, brickWidth, brickHeight), Color.one) }
-  brickSeq ++= (0 to columns).map { e => new Brick(Rect(gameField.x + (e * brickWidth), 6 * yOffset, brickWidth, brickHeight), Color.two) }
-  brickSeq ++= (0 to columns).map { e => new Brick(Rect(gameField.x + (e * brickWidth), 7 * yOffset, brickWidth, brickHeight), Color.three) }
-  brickSeq ++= (0 to columns).map { e => new Brick(Rect(gameField.x + (e * brickWidth), 8 * yOffset, brickWidth, brickHeight), Color.four) }
-  brickSeq ++= (0 to columns).map { e => new Brick(Rect(gameField.x + (e * brickWidth), 9 * yOffset, brickWidth, brickHeight), Color.five) }
-  brickSeq ++= (0 to columns).map { e => new Brick(Rect(gameField.x + (e * brickWidth), 10 * yOffset, brickWidth, brickHeight), Color.six) }
+  brickSeq ++= (0 to columns).map { e => new Brick(Rect(gameField.x + (e * brickWidth), initialHeight , brickWidth, brickHeight), this) }
+  brickSeq ++= (0 to columns).map { e => new Brick(Rect(gameField.x + (e * brickWidth), initialHeight + brickHeight, brickWidth, brickHeight), this) }
+  brickSeq ++= (0 to columns).map { e => new Brick(Rect(gameField.x + (e * brickWidth), initialHeight + (2*brickHeight), brickWidth, brickHeight), this) }
+  brickSeq ++= (0 to columns).map { e => new Brick(Rect(gameField.x + (e * brickWidth), initialHeight + (3*brickHeight), brickWidth, brickHeight), this) }
+  brickSeq ++= (0 to columns).map { e => new Brick(Rect(gameField.x + (e * brickWidth), initialHeight + (4*brickHeight), brickWidth, brickHeight), this) }
+  brickSeq ++= (0 to columns).map { e => new Brick(Rect(gameField.x + (e * brickWidth), initialHeight + (5*brickHeight), brickWidth, brickHeight), this) }
   bricks = brickSeq.toList
+  val lowerBound = bricks.last.bounds().bottomRight.y
 
   def draw(canvas: Canvas): Unit = {
     bricks.foreach(brick => brick.draw(canvas))
@@ -29,7 +30,7 @@ class Wall(val gameField: Rect) {
   def hitTest(ball: Ball): Boolean = {
     var hit = false
 
-    if (ball.position.y < 220) {
+    if (ball.position.y < lowerBound) {
       bricks.foreach(brick => {
         if (!hit && brick.contains(ball.bounds())) {
           Sound.brickBeep(brick.color)
@@ -46,4 +47,23 @@ class Wall(val gameField: Rect) {
   def hits: Int = removed.size
 
   def isDestroyed: Boolean = bricks.isEmpty
+
+  def getColor(y: Float): RGB = {
+    y match {
+      case y if y < (initialHeight + brickHeight) =>
+        Color.one
+      case y if y < (initialHeight + brickHeight * 2) =>
+        Color.two
+      case y if y < (initialHeight + brickHeight * 3) =>
+        Color.three
+      case y if y < (initialHeight + brickHeight * 4) =>
+        Color.four
+      case y if y < (initialHeight + brickHeight * 5) =>
+        Color.five
+      case y if y < (initialHeight + brickHeight * 6) =>
+        Color.six
+      case _ =>
+        Color.ball
+    }
+  }
 }

@@ -5,9 +5,9 @@ import sdl.Canvas
 
 class Sides(val screenWidth: Int, val screenHeight: Int) {
   val width: Int = screenWidth / 20
-  private val leftSide = Rect(0, 0, width, screenHeight)
-  private val rightSide = Rect(screenWidth - width, 0, width, screenHeight)
-  private val ceiling = Rect(width, 0, screenWidth - (2 * width), width)
+  private val leftSide = Rect(0, width, width, screenHeight)
+  private val rightSide = Rect(screenWidth - width, width, width, screenHeight)
+  private val ceiling = Rect(width, width, screenWidth - (2 * width), width)
 
   def hitTest(ball: Ball): Boolean = {
     if (leftSide.isOverlapping(ball.bounds()) ||

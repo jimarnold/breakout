@@ -1,11 +1,12 @@
 package game
 
 import game.entities.Hittable
-import mafs.{Line, Rect, Vector}
-import sdl.{Canvas, RGB}
+import mafs.{Rect, Vector}
+import sdl.{Canvas}
 
-class Brick(bounds: Rect, val color: RGB) extends Hittable {
+class Brick(bounds: Rect, val wall: Wall) extends Hittable {
 
+  val color = wall.getColor(bounds.y)
   def draw(canvas: Canvas): Unit = {
     canvas.setColor(color)
     canvas.drawRect(bounds())

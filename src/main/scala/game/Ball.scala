@@ -3,7 +3,7 @@ package game
 import mafs.{Line, Rect, Vector}
 import sdl.Canvas
 
-class Ball(var position: Vector, var direction: Vector) {
+class Ball(var position: Vector, var direction: Vector, wall: Wall) {
 
   private val width = 10
   private val halfWidth = width / 2f
@@ -27,23 +27,7 @@ class Ball(var position: Vector, var direction: Vector) {
   }
 
   def draw(canvas: Canvas): Unit = {
-    val color = position.y match {
-      case y if y < 120 =>
-        Color.one
-      case y if y < 140 =>
-        Color.two
-      case y if y < 160 =>
-        Color.three
-      case y if y < 180 =>
-        Color.four
-      case y if y < 200 =>
-        Color.five
-      case y if y < 220 =>
-        Color.six
-      case _ =>
-        Color.ball
-    }
-    canvas.setColor(color)
+    canvas.setColor(wall.getColor(position.y))
     canvas.drawRect(bounds())
   }
 

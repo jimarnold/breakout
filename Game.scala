@@ -15,7 +15,7 @@ import sdl.SDLWindowFlags.SDL_WINDOW_SHOWN
 object Game extends App {
   private val title  = c"Game"
   private val width  = 1000
-  private val height = 600
+  private val height = 700
 
   private var running                 = true
   private var window: Ptr[Window]     = _
@@ -107,15 +107,15 @@ object Game extends App {
 
   def newGame(): Unit = {
     sides = new Sides(width, height)
-    val gameField = Rect(sides.width, sides.width, width - (sides.width * 2), height - sides.width)
+    val gameField = Rect(sides.width, (sides.width * 3), width - (sides.width * 2), height - sides.width)
     wall = new Wall(gameField)
 
-    paddle = new Paddle(Vector(width / 2, 580), gameField)
+    paddle = new Paddle(Vector(width / 2, height - 20), gameField)
     newBall()
   }
 
   def newBall(): Unit = {
-    ball = new Ball(Vector(width - (sides.width * 2), 240), Vector(-0.5f, 0.5f))
+    ball = new Ball(Vector(width - (sides.width * 2), wall.lowerBound), Vector(-0.5f, 0.5f), wall)
   }
 
   def run(): Unit = {
