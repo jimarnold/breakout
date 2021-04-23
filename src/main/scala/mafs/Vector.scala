@@ -62,6 +62,6 @@ case class Vector(x: Float, y: Float) {
   }
 
   override def toString(): String = {
-    s"${x.toInt},${y.toInt}"
+    s"${x},${y}"
   }
 }

@@ -9,8 +9,8 @@ class Ball(var position: Vector, var direction: Vector) {
   private val halfWidth = width / 2f
   private val height = 10
   private val halfHeight = height / 2f
-  private var previousPosition = position
 
+  private var previousPosition = position
   private var speed = 500
 
   def update(elapsed: Float): Unit = {

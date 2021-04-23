@@ -70,8 +70,6 @@ object Sound {
       val command = s"afplay $file &"
       libc.system(toCString(command))
       lastPlayedTime = now
-    } else {
-      println(elapsed)
     }
   }
 }

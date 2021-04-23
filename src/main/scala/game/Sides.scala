@@ -9,16 +9,20 @@ class Sides(val screenWidth: Int, val screenHeight: Int) {
   private val rightSide = Rect(screenWidth - width, 0, width, screenHeight)
   private val ceiling = Rect(width, 0, screenWidth - (2 * width), width)
 
-  def hitTest(ball: Ball): Unit = {
+  def hitTest(ball: Ball): Boolean = {
     if (leftSide.isOverlapping(ball.bounds()) ||
       rightSide.isOverlapping(ball.bounds())) {
       val normal = Vector(0, 1)
       ball.bounce(normal)
       Sound.sideBeep()
+      true
     } else if (ceiling.isOverlapping(ball.bounds())) {
       val normal = Vector(1, 0)
       ball.bounce(normal)
       Sound.topBeep()
+      true
+    } else {
+      false
     }
   }
 

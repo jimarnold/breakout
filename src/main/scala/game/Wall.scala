@@ -26,17 +26,21 @@ class Wall(val gameField: Rect) {
     bricks.foreach(brick => brick.draw(canvas))
   }
 
-  def hitTest(ball: Ball): Unit = {
+  def hitTest(ball: Ball): Boolean = {
+    var hit = false
+
     if (ball.position.y < 220) {
       bricks.foreach(brick => {
-        if (brick.contains(ball.bounds())) {
+        if (!hit && brick.contains(ball.bounds())) {
           Sound.brickBeep(brick.color)
           brick.reflect(ball)
           removed += brick
+          hit = true
         }
       })
       bricks = bricks diff removed.distinct
     }
+    hit
   }
 
   def hits: Int = removed.size

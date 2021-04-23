@@ -28,6 +28,7 @@ object Game extends App {
   private var canvas: Canvas          = _
   private var lastTick: Long          = 0
   private var lives                   = 3
+  private var canHitBricks            = true
 
   def drawBricks(): Unit = {
   }
@@ -46,9 +47,17 @@ object Game extends App {
     if (paddle.contains(ball.bounds())) {
       paddle.reflect(ball)
       Sound.paddleBeep()
+      canHitBricks = true
     }
-    wall.hitTest(ball)
-    sides.hitTest(ball)
+    if (canHitBricks) {
+      val hitBrick = wall.hitTest(ball)
+      if (hitBrick) {
+        canHitBricks = false
+      }
+    }
+    if (sides.hitTest(ball)) {
+      canHitBricks = true
+    }
   }
 
   def keyPressed(key: Keycode): Boolean =
