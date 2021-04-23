@@ -12,7 +12,7 @@ class Brick(bounds: Rect, val color: RGB) extends Hittable {
   }
 
   def reflect(ball: Ball): Unit = {
-    ball.bounce(Vector(1, 0))
+    ball.bounce(Vector(1, 0), "brick")
   }
 
   def bounds(): Rect = {

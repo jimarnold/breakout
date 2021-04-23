@@ -38,7 +38,7 @@ class Paddle(var position: Vector, gameField: Rect) extends Hittable {
     } else {
       Vector(1, 0)
     }
-    ball.bounce(normal)
+    ball.bounce(normal, "paddle")
   }
 
   def bounds(): Rect = {

@@ -12,14 +12,18 @@ class Ball(var position: Vector, var direction: Vector) {
 
   private var previousPosition = position
   private var speed = 500
+  var lastEntity: String = ""
 
   def update(elapsed: Float): Unit = {
     previousPosition = position
     position = position.plus(direction.mult(elapsed * speed))
   }
 
-  def bounce(normal: Vector): Unit = {
-    direction = direction.reflect(normal).normalize()
+  def bounce(normal: Vector, entity: String): Unit = {
+    if (entity != lastEntity) {
+      direction = direction.reflect(normal).normalize()
+      lastEntity = entity
+    }
   }
 
   def draw(canvas: Canvas): Unit = {
