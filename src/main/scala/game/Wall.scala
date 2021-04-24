@@ -51,6 +51,8 @@ class Wall(val gameField: Rect, val scoreboard: ScoreBoard) {
 
   def getColor(y: Float): RGB = {
     y match {
+      case y if y < (initialHeight) =>
+        Color.grey
       case y if y < (initialHeight + brickHeight) =>
         Color.one
       case y if y < (initialHeight + brickHeight * 2) =>
