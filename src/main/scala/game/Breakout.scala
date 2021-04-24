@@ -17,6 +17,7 @@ object Breakout {
   private val height = 700
 
   private var running                 = true
+  private var playing                 = false
   private var window: Ptr[Window]     = _
   private var renderer: Ptr[Renderer] = _
   private var wall: Wall              = _
@@ -78,7 +79,7 @@ object Breakout {
   }
 
   def onIdle(elapsed: Float): Unit = {
-    if (!paused) {
+    if (playing && !paused) {
       val x = stackalloc[CInt]
       val y = stackalloc[CInt]
       SDL_GetRelativeMouseState(x, y)
@@ -94,10 +95,13 @@ object Breakout {
     initStaticEntities
     newBall
     paused = false
+    playing = true
   }
 
   def introScreen(): Unit = {
     initStaticEntities
+    ball = null
+    playing = false
   }
 
   private def initStaticEntities = {
