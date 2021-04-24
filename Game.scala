@@ -55,7 +55,6 @@ object Game extends App {
     if (canHitBricks) {
       val hitBrick = wall.hitTest(ball)
       if (hitBrick) {
-        scoreboard.increment()
         canHitBricks = false
       }
     }
@@ -115,7 +114,7 @@ object Game extends App {
     scoreboard.setLives(lives)
     sides = new Sides(width, height)
     val gameField = Rect(sides.width, (sides.width * 3), width - (sides.width * 2), height - sides.width)
-    wall = new Wall(gameField)
+    wall = new Wall(gameField, scoreboard)
 
     paddle = new Paddle(Vector(width / 2, height - 20), gameField)
     newBall()

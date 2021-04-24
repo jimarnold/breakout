@@ -33,8 +33,8 @@ class ScoreBoard {
   var lifeDigit: Seq[Rect] = five
   var score = 0
 
-  def increment(): Unit = {
-    score += 1
+  def increment(amount: Int): Unit = {
+    score += amount
     val scoreString = score.toString
     if (scoreString.length == 1) {
       third = digits.getOrElse(scoreString.charAt(0), zero)

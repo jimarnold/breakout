@@ -5,7 +5,7 @@ import sdl.{Canvas, RGB}
 
 import scala.collection.mutable.ArrayBuffer
 
-class Wall(val gameField: Rect) {
+class Wall(val gameField: Rect, val scoreboard: ScoreBoard) {
   private var bricks: List[Brick] = _
   private val columns = 17 // 0-based
   private val removed = ArrayBuffer.empty[Brick]
@@ -37,6 +37,7 @@ class Wall(val gameField: Rect) {
           brick.reflect(ball)
           removed += brick
           hit = true
+          scoreboard.increment(getPoints(brick.bounds.y))
         }
       })
       bricks = bricks diff removed.distinct
@@ -64,6 +65,17 @@ class Wall(val gameField: Rect) {
         Color.six
       case _ =>
         Color.ball
+    }
+  }
+
+  def getPoints(y: Float): Int = {
+    y match {
+      case y if y < (initialHeight + brickHeight * 2) =>
+        7
+      case y if y < (initialHeight + brickHeight * 4) =>
+        4
+      case _ =>
+        1
     }
   }
 }
