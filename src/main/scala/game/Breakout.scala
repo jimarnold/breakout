@@ -58,8 +58,15 @@ object Breakout {
         canHitBricks = false
       }
     }
-    if (sides.hitTest(ball)) {
-      canHitBricks = true
+    sides.hitTest(ball) match {
+      case SideHitResult.Side =>
+        canHitBricks = true
+      case SideHitResult.Ceiling =>
+        canHitBricks = true
+        ball.hitCeiling()
+        paddle.hitCeiling()
+      case _ =>
+        ()
     }
   }
 
@@ -73,7 +80,6 @@ object Breakout {
       newBall()
     }
     if (lives == 0 || wall.isDestroyed) {
-      paused = true
       introScreen()
     }
   }
@@ -83,28 +89,29 @@ object Breakout {
       val x = stackalloc[CInt]
       val y = stackalloc[CInt]
       SDL_GetRelativeMouseState(x, y)
+      hitTest()
       paddle.update(elapsed, !x)
       ball.update(elapsed)
-      hitTest()
-      checkWinOrLose()
       ball.setSpeed(wall.hits)
+      checkWinOrLose()
     }
   }
 
   def newGame(): Unit = {
-    initStaticEntities
-    newBall
+    initStaticEntities()
+    newBall()
     paused = false
     playing = true
   }
 
   def introScreen(): Unit = {
-    initStaticEntities
+    initStaticEntities()
     ball = null
+    paused = true
     playing = false
   }
 
-  private def initStaticEntities = {
+  private def initStaticEntities(): Unit = {
     lives = 5
     scoreboard = new ScoreBoard
     scoreboard.setLives(lives)

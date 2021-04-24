@@ -5,9 +5,10 @@ import mafs.{Rect, Vector}
 import sdl.Canvas
 
 class Paddle(var position: Vector, gameField: Rect) extends Hittable {
-  private val width = 120
-  private val halfWidth = width / 2
-  private val height = 20
+  private var width = 120f
+  private var halfWidth = width / 2
+  private val height = 20f
+  private var hasHitCeiling = false
 
   def update(elapsed: Float, x: Int): Unit = {
     position = Vector(position.x + x, position.y)
@@ -39,6 +40,18 @@ class Paddle(var position: Vector, gameField: Rect) extends Hittable {
       Vector(1, 0)
     }
     ball.bounce(normal, "paddle")
+  }
+
+  def hitCeiling(): Unit = {
+    if (!hasHitCeiling) {
+      shrink()
+      hasHitCeiling = true
+    }
+  }
+
+  def shrink(): Unit = {
+    width = halfWidth
+    halfWidth = width / 2f
   }
 
   def bounds(): Rect = {

@@ -4,14 +4,15 @@ import mafs.{Line, Rect, Vector}
 import sdl.Canvas
 
 class Ball(var position: Vector, var direction: Vector, wall: Wall) {
-
-  private val width = 10
+  private val width = 10f
   private val halfWidth = width / 2f
-  private val height = 10
+  private val height = 10f
   private val halfHeight = height / 2f
-
+  private val baseSpeed = 500
   private var previousPosition = position
-  private var speed = 500
+  private var speed = baseSpeed
+  private var hasHitCeiling = false
+
   var lastEntity: String = ""
 
   def update(elapsed: Float): Unit = {
@@ -41,12 +42,21 @@ class Ball(var position: Vector, var direction: Vector, wall: Wall) {
     new Line(previousPosition, end)
   }
 
+  def hitCeiling(): Unit = {
+    hasHitCeiling = true
+  }
+
   def setSpeed(hits: Int): Unit = {
+    var modifier = 0
     if (hits >= 4) {
-      speed = 600
+      modifier += 100
     }
     if (hits >= 12) {
-      speed = 700
+      modifier += 100
     }
+    if (hasHitCeiling) {
+      modifier += 100
+    }
+    speed = baseSpeed + modifier
   }
 }
