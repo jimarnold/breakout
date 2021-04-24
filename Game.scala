@@ -21,13 +21,14 @@ object Game extends App {
   private var window: Ptr[Window]     = _
   private var renderer: Ptr[Renderer] = _
   private var wall: Wall              = _
-  private var sides: Sides              = _
+  private var sides: Sides            = _
   private var paddle: Paddle          = _
   private var ball: Ball              = _
+  private var scoreboard: ScoreBoard  = _
   private var pressed                 = collection.mutable.Set.empty[Keycode]
   private var canvas: Canvas          = _
   private var lastTick: Long          = 0
-  private var lives                   = 3
+  private var lives                   = 5
   private var canHitBricks            = true
 
   def drawBricks(): Unit = {
@@ -40,6 +41,8 @@ object Game extends App {
     wall.draw(canvas)
     paddle.draw(canvas)
     ball.draw(canvas)
+    scoreboard.draw(canvas)
+
     canvas.present()
   }
 
@@ -52,6 +55,7 @@ object Game extends App {
     if (canHitBricks) {
       val hitBrick = wall.hitTest(ball)
       if (hitBrick) {
+        scoreboard.increment()
         canHitBricks = false
       }
     }
@@ -66,6 +70,7 @@ object Game extends App {
   def checkWinOrLose() = {
     if (ball.position.y >= height) {
       lives-= 1
+      scoreboard.setLives(lives)
       newBall()
     }
     if (lives == 0) {
@@ -106,6 +111,8 @@ object Game extends App {
   }
 
   def newGame(): Unit = {
+    scoreboard = new ScoreBoard
+    scoreboard.setLives(lives)
     sides = new Sides(width, height)
     val gameField = Rect(sides.width, (sides.width * 3), width - (sides.width * 2), height - sides.width)
     wall = new Wall(gameField)

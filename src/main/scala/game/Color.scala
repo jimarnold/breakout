@@ -9,7 +9,7 @@ object Color {
   val four: RGB       = RGB(170, 165, 65)
   val five: RGB       = RGB(95, 155, 85)
   val six: RGB        = RGB(75, 85, 200)
-  val sides: RGB      = RGB(140, 140, 140)
+  val grey: RGB      = RGB(140, 140, 140)
   val paddle: RGB     = RGB(185, 80, 75)
   val ball: RGB       = paddle
 }

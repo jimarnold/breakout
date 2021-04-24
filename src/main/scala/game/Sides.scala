@@ -27,7 +27,7 @@ class Sides(val screenWidth: Int, val screenHeight: Int) {
   }
 
   def draw(canvas: Canvas): Unit = {
-    canvas.setColor(Color.sides)
+    canvas.setColor(Color.grey)
     canvas.drawRect(ceiling)
     canvas.drawRect(leftSide)
     canvas.drawRect(rightSide)
