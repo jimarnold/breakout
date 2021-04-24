@@ -61,6 +61,7 @@ object SDLKeys {
   val DOWN_KEY  = 1073741905
   val UP_KEY    = 1073741906
   val SPACE = 32
+  val P = 112
   val ESCAPE = 27
 }
 

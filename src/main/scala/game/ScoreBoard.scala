@@ -71,12 +71,12 @@ class Digit(segments: Seq[Rect], position: Vector) {
 
 object Segment {
   val width = 80
-  val height = 30
+  val height = 40
   val halfHeight = height / 2
   val halfWidth = width / 2
   val narrow = 8
   val halfNarrow = narrow / 2
-  val wide = narrow * 4
+  val wide = narrow * 3
 
   val top = Rect(0, 0, width, narrow)
   val upperLeft = Rect(0, 0, wide, halfHeight + halfNarrow)

@@ -2,9 +2,9 @@ package game
 
 import sdl.{RGB, libc}
 
-import scala.scalanative.native.{CQuote, Zone, toCString}
+import scala.scalanative.native.{Zone, toCString}
 
-object BeepFile {
+object Notes {
   val F3 = "beep_f3.wav"
   val A3 = "beep_a3.wav"
   val C4 = "beep_c4.wav"
@@ -13,34 +13,31 @@ object BeepFile {
   val C5 = "beep_c5.wav"
   val D5 = "beep_d5.wav"
   val C6 = "beep_c6.wav"
+
+  val byColor = Map(
+    Color.one -> Notes.F3,
+    Color.two -> Notes.A3,
+    Color.three -> Notes.C4,
+    Color.four -> Notes.E4,
+    Color.five -> Notes.A4,
+    Color.six -> Notes.C5
+  )
 }
 
 object Sound {
   var lastPlayedTime: Long = 0
+
   def paddleBeep(): Unit = {
-    play(BeepFile.D5)
+    play(Notes.D5)
   }
   def topBeep(): Unit = {
-    play(BeepFile.D5)
+    play(Notes.D5)
   }
   def sideBeep(): Unit = {
-    play(BeepFile.C6)
+    play(Notes.C6)
   }
   def brickBeep(color: RGB): Unit = {
-    color match {
-      case Color.one =>
-        play(BeepFile.F3)
-      case Color.two =>
-        play(BeepFile.A3)
-      case Color.three =>
-        play(BeepFile.C4)
-      case Color.four =>
-        play(BeepFile.E4)
-      case Color.five =>
-        play(BeepFile.A4)
-      case Color.six =>
-        play(BeepFile.C5)
-    }
+    play(Notes.byColor.getOrElse(color, Notes.F3))
   }
 
   private def play(file: String): Unit = Zone { implicit z =>

@@ -30,6 +30,7 @@ object Game extends App {
   private var lastTick: Long          = 0
   private var lives                   = 5
   private var canHitBricks            = true
+  private var paused                  = false
 
   def drawBricks(): Unit = {
   }
@@ -86,15 +87,19 @@ object Game extends App {
     }
     if (keyPressed(SPACE)) {
       newGame()
+    } else if (keyPressed(P)) {
+      paused = !paused
     } else {
-      val x = stackalloc[CInt]
-      val y = stackalloc[CInt]
-      SDL_GetRelativeMouseState(x, y)
-      paddle.update(elapsed, !x)
-      ball.update(elapsed)
-      hitTest()
-      checkWinOrLose()
-      ball.setSpeed(wall.hits)
+      if (!paused) {
+        val x = stackalloc[CInt]
+        val y = stackalloc[CInt]
+        SDL_GetRelativeMouseState(x, y)
+        paddle.update(elapsed, !x)
+        ball.update(elapsed)
+        hitTest()
+        checkWinOrLose()
+        ball.setSpeed(wall.hits)
+      }
     }
   }
 
