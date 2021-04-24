@@ -110,6 +110,7 @@ object Game extends App {
   }
 
   def newGame(): Unit = {
+    lives = 5
     scoreboard = new ScoreBoard
     scoreboard.setLives(lives)
     sides = new Sides(width, height)

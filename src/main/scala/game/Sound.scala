@@ -16,6 +16,7 @@ object BeepFile {
 }
 
 object Sound {
+  var lastPlayedTime: Long = 0
   def paddleBeep(): Unit = {
     play(BeepFile.D5)
   }
@@ -43,7 +44,12 @@ object Sound {
   }
 
   private def play(file: String): Unit = Zone { implicit z =>
+    val now = System.nanoTime()
+    val elapsed = (now - lastPlayedTime).toFloat / 1000000000
+    if (elapsed > 0.02) {
       val command = s"afplay $file &"
       libc.system(toCString(command))
+      lastPlayedTime = now
+    }
   }
 }
