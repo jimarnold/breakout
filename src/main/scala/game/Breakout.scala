@@ -80,7 +80,9 @@ object Breakout {
       newBall()
     }
     if (lives == 0 || wall.isDestroyed) {
-      introScreen()
+      ball = null
+      paused = true
+      playing = false
     }
   }
 
