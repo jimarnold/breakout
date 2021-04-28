@@ -53,6 +53,7 @@ class Paddle(var position: Vector2, gameField: Rect) extends Hittable {
   def shrink(): Unit = {
     width = halfWidth
     halfWidth = width / 2f
+    sprite.setWidth(width)
   }
 
   def bounds(): Rect = {
