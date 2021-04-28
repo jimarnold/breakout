@@ -1,6 +1,6 @@
 package mafs
 
-final case class Line(p1: Vector, p2: Vector) {
+final case class Line(p1: Vector2, p2: Vector2) {
   override def toString() : String = {
     s"p1:$p1, p2:$p2"
   }
@@ -9,7 +9,7 @@ final case class Line(p1: Vector, p2: Vector) {
 object Line {
   // Given three colinear points p, q, r, the function checks if
   // point q lies on line segment 'pr'
-  def onSegment(p: Vector, q: Vector, r: Vector): Boolean = {
+  def onSegment(p: Vector2, q: Vector2, r: Vector2): Boolean = {
     q.x <= Math.max(p.x, r.x) &&
       q.x >= Math.min(p.x, r.x) &&
       q.y <= Math.max(p.y, r.y) &&
@@ -21,7 +21,7 @@ object Line {
   // 0 --> p, q and r are colinear
   // 1 --> Clockwise
   // 2 --> Counterclockwise
-  def orientation(p: Vector, q: Vector, r: Vector): Int = {
+  def orientation(p: Vector2, q: Vector2, r: Vector2): Int = {
     val orientation = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y)
     if (orientation == 0) 0 // colinear
     else if (orientation > 0) 1
@@ -34,7 +34,7 @@ object Line {
 
   // The main function that returns true if line segment 'p1q1'
   // and 'p2q2' intersect.
-  def doIntersect(p1: Vector, q1: Vector, p2: Vector, q2: Vector): Boolean = {
+  def doIntersect(p1: Vector2, q1: Vector2, p2: Vector2, q2: Vector2): Boolean = {
     // Find the four orientations needed for general and special cases
     val o1 = orientation(p1, q1, p2)
     val o2 = orientation(p1, q1, q2)

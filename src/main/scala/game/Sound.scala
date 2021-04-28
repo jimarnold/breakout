@@ -1,8 +1,7 @@
 package game
 
-import sdl.{RGB, libc}
-
-import scala.scalanative.native.{Zone, toCString}
+import sdl.RGB
+import sys.process._
 
 object Notes {
   val F3 = "beep_f3.wav"
@@ -40,12 +39,11 @@ object Sound {
     play(Notes.byColor.getOrElse(color, Notes.F3))
   }
 
-  private def play(file: String): Unit = Zone { implicit z =>
+  private def play(file: String): Unit = {
     val now = System.nanoTime()
     val elapsed = (now - lastPlayedTime).toFloat / 1000000000
     if (elapsed > 0.02) {
-      val command = s"afplay $file &"
-      libc.system(toCString(command))
+      s"afplay $file".run()
       lastPlayedTime = now
     }
   }

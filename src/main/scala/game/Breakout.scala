@@ -1,49 +1,160 @@
 package game
 
-import scalanative.native._
-import sdl._
-import SDL._
-import SDLEvents._
-import SDLKeys._
-import SDLConst._
-import SDLImplicits._
 import mafs._
-import sdl.SDLRenderFlags.{SDL_RENDERER_ACCELERATED, SDL_RENDERER_PRESENTVSYNC}
-import sdl.SDLWindowFlags.SDL_WINDOW_SHOWN
+import org.lwjgl.glfw._
+import org.lwjgl.opengl._
+import org.lwjgl.glfw.Callbacks._
+import org.lwjgl.glfw.GLFW._
+import org.lwjgl.opengl.GL11._
+import org.lwjgl.opengl.GL15._
+import org.lwjgl.opengl.GL20._
+import org.lwjgl.system.MemoryUtil._
+import org.lwjgl.BufferUtils
+import org.lwjgl.opengl.GL30.{glBindVertexArray, glDeleteVertexArrays, glGenVertexArrays}
+
+import scala.collection.mutable
 
 object Breakout {
-  private val title  = c"Game"
-  private val width  = 1000
-  private val height = 700
-
   private var running                 = true
   private var playing                 = false
-  private var window: Ptr[Window]     = _
-  private var renderer: Ptr[Renderer] = _
   private var wall: Wall              = _
   private var sides: Sides            = _
   private var paddle: Paddle          = _
   private var ball: Ball              = _
   private var scoreboard: ScoreBoard  = _
-  private var pressed                 = collection.mutable.Set.empty[Keycode]
-  private var canvas: Canvas          = _
+  private val pressed                 = collection.mutable.Set.empty[Int]
   private var lastTick: Long          = 0
   private var lives                   = 5
   private var canHitBricks            = true
   private var paused                  = true
 
-  def onDraw(): Unit = {
-    canvas.setColor(0, 0, 0)
-    canvas.clear()
-    sides.draw(canvas)
-    wall.draw(canvas)
-    paddle.draw(canvas)
-    if (ball != null) {
-      ball.draw(canvas)
-    }
-    scoreboard.draw(canvas)
+  val WIDTH: Int = 1000
+  val HEIGHT: Int = 700
+  val projectionMatrix: Matrix4 = Matrix4.ortho(0f, WIDTH, HEIGHT, 0f, -1f, 1f)
 
-    canvas.present()
+  var quadVbo: Int = _
+  var vao: Int = 0
+  var cameraToClipMatrixUniform: Int = 0
+  var colorUniform: Int = 0
+  var window: Long = 0
+  var program: Int = 0
+  var brick: Sprite = _
+
+  def run() {
+    try {
+      initWindow()
+      initGraphics()
+      loop()
+
+      // Free the window callbacks and destroy the window
+      glfwFreeCallbacks(window)
+      glfwDestroyWindow(window)
+    }
+    finally {
+      // Terminate GLFW and free the error callback
+      glfwTerminate()
+      glfwSetErrorCallback(null).free()
+    }
+  }
+
+  private def initWindow() {
+    // Setup an error callback. The default implementation
+    // will print the error message in System.err.
+    GLFWErrorCallback.createPrint(System.err).set()
+
+    // Initialize GLFW. Most GLFW functions will not work before doing this.
+    if (!glfwInit())
+      throw new IllegalStateException("Unable to initialize GLFW")
+
+    glfwDefaultWindowHints() // optional, the current window hints are already the default
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4)
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1)
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE)
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE)
+    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE) // the window will stay hidden after creation
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE) // the window will be resizable
+
+    window = glfwCreateWindow(WIDTH, HEIGHT, "BREAKOUT", NULL, NULL)
+
+    if (window == NULL)
+      throw new RuntimeException("Failed to create the GLFW window!")
+
+    // Setup a key callback. It will be called every time a key is pressed, repeated or released.
+    val kb = new KeyboardHandler(pressed)
+    glfwSetKeyCallback(window, kb)
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN)
+
+    val vidmode: GLFWVidMode = glfwGetVideoMode(glfwGetPrimaryMonitor())
+    // Center our window
+    glfwSetWindowPos(
+      window,
+      (vidmode.width() - WIDTH) / 2,
+      (vidmode.height() - HEIGHT) / 2)
+
+    glfwMakeContextCurrent(window)
+    glfwSwapInterval(1)
+    glfwShowWindow(window)
+  }
+
+  def initGraphics(): Unit = {
+    GL.createCapabilities()
+
+    val fbWidth = new Array[Int](1)
+    val fbHeight = new Array[Int](1)
+    glfwGetFramebufferSize(window, fbWidth, fbHeight)
+    glViewport(0, 0, fbWidth(0), fbHeight(0))
+
+    val vs = NewShader(GL_VERTEX_SHADER, """#version 400
+    in vec2 position;
+    out vec4 fs_color;
+    uniform vec4 color;
+    uniform mat4 cameraToClipMatrix;
+    void main() {
+        gl_Position = cameraToClipMatrix * vec4(position.x, position.y, 0.0, 1.0);
+        fs_color = color;
+    }""")
+
+    val fs = NewShader(GL_FRAGMENT_SHADER, """#version 400
+    in vec4 fs_color;
+    out vec4 frag_color;
+    void main(void) {
+      frag_color = fs_color;
+    }""")
+
+    program = NewProgram(vs, fs)
+
+    quadVbo = glGenBuffers
+    val width = 1f
+    val height = 1f
+    val left = 0f
+    val top = 0f
+
+    val vertices = rect(left, top, width, height)
+
+    glBindBuffer(GL_ARRAY_BUFFER, quadVbo)
+    glBufferData(GL_ARRAY_BUFFER, BufferUtils.createFloatBuffer(vertices.length).put(vertices).flip, GL_STATIC_DRAW)
+
+    vao = glGenVertexArrays()
+    glBindVertexArray(vao)
+    glEnableVertexAttribArray(0)
+    glBindBuffer(GL_ARRAY_BUFFER, quadVbo)
+    glVertexAttribPointer(0, 2, GL_FLOAT, false, 0, NULL)
+    glBindBuffer(GL_ARRAY_BUFFER, 0)
+
+    this.cameraToClipMatrixUniform = glGetUniformLocation(program, "cameraToClipMatrix")
+    this.colorUniform = glGetUniformLocation(program, "color")
+    this.brick = Sprite(40f, 20f, Color.paddle)
+  }
+
+  private def rect(left: Float, top: Float, width: Float, height: Float): Array[Float] = {
+     Array(
+      left, top,
+      left, top + height,
+      left + width, top,
+      left, top + height,
+      left + width, top + height,
+      left + width, top
+    )
   }
 
   def hitTest(): Unit = {
@@ -70,11 +181,8 @@ object Breakout {
     }
   }
 
-  def keyPressed(key: Keycode): Boolean =
-    pressed.contains(key)
-
   def checkWinOrLose(): Unit = {
-    if (ball.position.y >= height) {
+    if (ball.position.y >= HEIGHT) {
       lives-= 1
       scoreboard.setLives(lives)
       newBall()
@@ -86,15 +194,22 @@ object Breakout {
     }
   }
 
+  def keyPressed(key: Int): Boolean =
+    pressed.contains(key)
+
   def onIdle(elapsed: Float): Unit = {
     if (playing && !paused) {
-      val x = stackalloc[CInt]
-      val y = stackalloc[CInt]
-      SDL_GetRelativeMouseState(x, y)
-      hitTest()
-      paddle.update(elapsed, !x)
+
+      val x = new Array[Double](1)
+      val y = new Array[Double](1)
+      glfwGetCursorPos(window, x, y);
+
+      paddle.update(elapsed, x(0).toInt)
       ball.update(elapsed)
       ball.setSpeed(wall.hits)
+      brick.setPosition(Vector2(200f, 0f))
+
+      hitTest()
       checkWinOrLose()
     }
   }
@@ -117,59 +232,103 @@ object Breakout {
     lives = 5
     scoreboard = new ScoreBoard
     scoreboard.setLives(lives)
-    sides = new Sides(width, height)
-    val gameField = Rect(sides.width, sides.width * 3, width - (sides.width * 2), height - sides.width)
+    sides = new Sides(WIDTH, HEIGHT)
+    val gameField = Rect(sides.width, sides.width * 3, WIDTH - (sides.width * 2), HEIGHT - sides.width)
     wall = new Wall(gameField, scoreboard)
-    paddle = new Paddle(Vector(width / 2, height - 20), gameField)
+    paddle = new Paddle(Vector2(WIDTH / 2, HEIGHT - 20), gameField)
   }
 
   def newBall(): Unit = {
-    ball = new Ball(Vector(width - (sides.width * 2), wall.lowerBound), Vector(-0.5f, 0.5f), wall)
+    ball = new Ball(Vector2(WIDTH - (sides.width * 2), wall.lowerBound), Vector2(-0.5f, 0.5f), wall)
   }
 
-  def initSDL(): Unit = {
-    SDL_Init(SDL_INIT_VIDEO)
-    SDL_ShowCursor(SDL_DISABLE)
-    SDL_SetRelativeMouseMode(SDL_TRUE)
-    window = SDL_CreateWindow(title, 0, 0, width, height, SDL_WINDOW_SHOWN)
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC)
-    canvas = sdl.Canvas(renderer)
-  }
-
-  def run(): Unit = {
-    initSDL()
+  def loop() {
     introScreen()
 
-    val event = stackalloc[Event]
-    while (running) {
+    while (!glfwWindowShouldClose(window)) {
       val now = System.nanoTime()
       val elapsed = (now - lastTick).toFloat / 1000000000
       lastTick = now
-
-      while (SDL_PollEvent(event) != 0) {
-        event.type_ match {
-          case QUIT =>
-            return
-          case KEY_DOWN =>
-            pressed += event.cast[Ptr[KeyboardEvent]].keycode
-            if (keyPressed(P)) {
-              paused = !paused
-            }
-            if (keyPressed(ESCAPE)) {
-              running = false
-            }
-            if (keyPressed(SPACE)) {
-              newGame()
-            }
-          case KEY_UP =>
-            pressed -= event.cast[Ptr[KeyboardEvent]].keycode
-          case _ =>
-            ()
-        }
+      if (keyPressed(GLFW_KEY_P)) {
+        paused = !paused
       }
-      onDraw()
+      if (keyPressed(GLFW_KEY_ESCAPE)) {
+        running = false
+      }
+      if (keyPressed(GLFW_KEY_SPACE)) {
+        newGame()
+      }
+
+      glfwPollEvents()
+      glClearColor(0.2f, 0.3f, 0.3f, 1)
+      glClear(GL_COLOR_BUFFER_BIT)
+
       onIdle(elapsed)
+
+      scoreboard.draw().foreach(s => renderSprite(s))
+      sides.draw().foreach(s => renderSprite(s))
+      wall.draw().foreach(s => renderSprite(s))
+      paddle.draw().foreach(s => renderSprite(s))
+      if (ball != null) {
+        ball.draw().foreach(s => renderSprite(s))
+      }
+
+      glfwSwapBuffers(window)
     }
+
+    glDeleteVertexArrays(this.vao)
+    glDeleteBuffers(this.quadVbo)
+    glDeleteProgram(this.program)
+  }
+
+  private def renderSprite(sprite: Sprite) = {
+    glUseProgram(program)
+    glBindVertexArray(vao)
+    val spriteTransform = sprite.transformMatrix()
+    val clipMatrix = spriteTransform mult projectionMatrix
+    val clipMatrixArray = clipMatrix.toa()
+    glUniformMatrix4fv(this.cameraToClipMatrixUniform, false, clipMatrixArray)
+    glUniform4fv(this.colorUniform, sprite.color.toa())
+    glDrawArrays(GL_TRIANGLES, 0, 6)
+    glUseProgram(0)
+  }
+
+  def NewProgram(vs: Int, fs: Int): Int = {
+    val program = glCreateProgram()
+
+    glAttachShader(program, vs)
+    glAttachShader(program, fs)
+    glLinkProgram(program)
+    val linked = glGetProgrami(program, GL_LINK_STATUS)
+    if (linked == GL_FALSE) {
+      println(glGetProgramInfoLog(program))
+      throw new AssertionError("Could not link program")
+    }
+    glDeleteShader(vs)
+    glDeleteShader(fs)
+    program
+  }
+
+  def NewShader(shaderType: Int, source: String) : Int = {
+    val s = glCreateShader(shaderType)
+    glShaderSource(s, source)
+    glCompileShader(s)
+    val status = glGetShaderi(s, GL_COMPILE_STATUS)
+    if (status == GL_FALSE) {
+      println(glGetShaderInfoLog(s))
+    }
+    s
   }
 }
 
+class KeyboardHandler(val pressed: mutable.Set[Int]) extends GLFWKeyCallback {
+  def invoke(window: Long, key: Int, scancode: Int, action: Int, mods: Int) {
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
+      glfwSetWindowShouldClose(window, true) // We will detect this in our rendering loop
+
+    if (action == GLFW_PRESS) {
+      pressed += key
+    } else if(action == GLFW_RELEASE)
+      pressed -= key
+  }
+}

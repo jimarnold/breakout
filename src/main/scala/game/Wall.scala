@@ -1,7 +1,7 @@
 package game
 
 import mafs.Rect
-import sdl.{Canvas, RGB}
+import sdl.RGB
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -23,8 +23,8 @@ class Wall(val gameField: Rect, val scoreboard: ScoreBoard) {
   bricks = brickSeq.toList
   val lowerBound = bricks.last.bounds().bottomRight.y
 
-  def draw(canvas: Canvas): Unit = {
-    bricks.foreach(brick => brick.draw(canvas))
+  def draw(): Seq[Sprite] = {
+    bricks.map(_.draw())
   }
 
   def hitTest(ball: Ball): Boolean = {

@@ -1,7 +1,8 @@
 package game
 
-import mafs.{Rect, Vector}
-import sdl.Canvas
+import mafs.{Rect, Vector2}
+
+import scala.collection.mutable
 
 class ScoreBoard {
   val zero = List(Segment.top, Segment.upperLeft, Segment.upperRight, Segment.lowerLeft, Segment.lowerRight, Segment.bottom)
@@ -54,18 +55,36 @@ class ScoreBoard {
     lifeDigit = digits.getOrElse(lives.toString.charAt(0), zero)
   }
 
-  def draw(canvas: Canvas): Unit = {
-    canvas.setColor(Color.grey)
-    first.foreach(s => canvas.drawRect(s.transform(Vector(100, 10))))
-    second.foreach(s => canvas.drawRect(s.transform(Vector(200, 10))))
-    third.foreach(s => canvas.drawRect(s.transform(Vector(300, 10))))
-    lifeDigit.foreach(s => canvas.drawRect(s.transform(Vector(600, 10))))
-  }
-}
+  def draw(): Seq[Sprite] = {
+    val sprites = mutable.MutableList.empty[Sprite]
+    first.foreach(s => {
+      val rect = s.transform(Vector2(100, 10))
+      val sprite = Sprite(rect.width, rect.height, Color.grey)
+      sprite.setPosition(Vector2(rect.x, rect.y))
+      sprites += sprite
+    })
 
-class Digit(segments: Seq[Rect], position: Vector) {
-  def draw(canvas: Canvas): Unit = {
-    segments.foreach(s => canvas.drawRect(s.transform(position)))
+    second.foreach(s => {
+      val rect = s.transform(Vector2(200, 10))
+      val sprite = Sprite(rect.width, rect.height, Color.grey)
+      sprite.setPosition(Vector2(rect.x, rect.y))
+      sprites += sprite
+    })
+
+    third.foreach(s => {
+      val rect = s.transform(Vector2(300, 10))
+      val sprite = Sprite(rect.width, rect.height, Color.grey)
+      sprite.setPosition(Vector2(rect.x, rect.y))
+      sprites += sprite
+    })
+
+    lifeDigit.foreach(s => {
+      val rect = s.transform(Vector2(600, 10))
+      val sprite = Sprite(rect.width, rect.height, Color.grey)
+      sprite.setPosition(Vector2(rect.x, rect.y))
+      sprites += sprite
+    })
+    sprites
   }
 }
 
