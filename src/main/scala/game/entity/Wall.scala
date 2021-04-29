@@ -1,5 +1,7 @@
-package game
+package game.entity
 
+import game.graphics.{Color, RGB, Sprite}
+import game.Sound
 import mafs.Rect
 
 import scala.collection.mutable.ArrayBuffer

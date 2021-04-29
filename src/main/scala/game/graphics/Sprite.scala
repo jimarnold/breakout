@@ -1,4 +1,4 @@
-package game
+package game.graphics
 
 import mafs.{Matrix4, Rect, Vector2, Vector4}
 

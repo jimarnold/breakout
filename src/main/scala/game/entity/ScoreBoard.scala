@@ -1,5 +1,7 @@
-package game
+package game.entity
 
+import game.graphics
+import game.graphics.{Color, Sprite}
 import mafs.{Rect, Vector2}
 
 case class Digit(position: Vector2, segments: Seq[Rect]) {
@@ -11,7 +13,7 @@ case class Digit(position: Vector2, segments: Seq[Rect]) {
 
   def toSprites(segments: Seq[Rect]): Seq[Sprite] = {
     segments.map(s => {
-      Sprite(s.translate(position), Color.grey)
+      graphics.Sprite(s.translate(position), Color.grey)
     })
   }
 }

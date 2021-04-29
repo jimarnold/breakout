@@ -2,6 +2,7 @@ package game
 
 import java.nio.ShortBuffer
 
+import game.graphics.{Color, RGB}
 import org.lwjgl.openal.AL10.{alBufferData, alGenBuffers}
 import org.lwjgl.openal.AL10._
 import org.lwjgl.openal.ALC10._

@@ -1,6 +1,6 @@
-package game
+package game.entity
 
-import game.entities.{EntityType, Hittable}
+import game.graphics.Sprite
 import mafs.{Line, Rect, Vector2}
 
 class Ball(var position: Vector2, var direction: Vector2, wall: Wall) extends Hittable {
@@ -40,9 +40,7 @@ class Ball(var position: Vector2, var direction: Vector2, wall: Wall) extends Hi
   }
 
   def progressLine(): Line = {
-    val lenAB = Math.sqrt(Math.pow(previousPosition.x - position.x, 2.0) + Math.pow(previousPosition.y - position.y, 2.0)).toFloat
-    val end = Vector2(position.x + (position.x - previousPosition.x) / lenAB * 5, position.y + (position.y - previousPosition.y) / lenAB * 5)
-    new Line(previousPosition, end)
+    Line(previousPosition, position)
   }
 
   def hitCeiling(): Unit = {

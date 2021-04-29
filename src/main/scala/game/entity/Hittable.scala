@@ -1,4 +1,4 @@
-package game.entities
+package game.entity
 
 import mafs.Rect
 

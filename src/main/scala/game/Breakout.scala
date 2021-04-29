@@ -1,5 +1,7 @@
 package game
 
+import game.entity.{Ball, Paddle, ScoreBoard, SideHitResult, Sides, Wall}
+import game.graphics.Sprite
 import mafs._
 import org.lwjgl.glfw._
 import org.lwjgl.opengl._

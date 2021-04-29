@@ -1,11 +1,11 @@
-package game
+package game.entity
 
-import game.entities.{EntityType, Hittable}
+import game.graphics.{Color, Sprite}
 import mafs.{Rect, Vector2}
 
 class Paddle(var position: Vector2, gameField: Rect) extends Hittable {
-  private var width = gameField.width / 8f
-  private var halfWidth = width / 2f
+  private val width = gameField.width / 8f
+  private val halfWidth = width / 2f
   private val height = gameField.height / 50f
   private var hasHitCeiling = false
   private val sprite = Sprite(position.x, position.y, width, height, Color.paddle)
