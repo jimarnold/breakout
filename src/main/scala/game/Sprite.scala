@@ -1,13 +1,12 @@
 package game
 
-import mafs.{Matrix4, Vector2, Vector4}
+import mafs.{Matrix4, Rect, Vector2, Vector4}
 import sdl.RGB
 
-case class Sprite(var width: Float, var height: Float, var color: RGB) {
-  var position: Vector2 = Vector2(0f, 0f)
-
+case class Sprite(var x: Float, var y: Float, var width: Float, var height: Float, var color: RGB) {
   def setPosition(v: Vector2): Unit = {
-    position = v
+    x = v.x
+    y = v.y
   }
 
   def setWidth(w: Float): Unit = {
@@ -24,6 +23,10 @@ case class Sprite(var width: Float, var height: Float, var color: RGB) {
 
   def transformMatrix(): Matrix4 = {
     val scaleMatrix = Matrix4.scale(Vector4(width, height, 1f, 1f))
-    scaleMatrix mult Matrix4.translation(position.to4)
+    scaleMatrix mult Matrix4.translation(Vector4(x, y, 0f, 1f))
   }
+}
+
+object Sprite {
+  def apply(rect: Rect, color: RGB) = new Sprite(rect.x, rect.y, rect.width, rect.height, color)
 }

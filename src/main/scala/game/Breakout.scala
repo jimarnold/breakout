@@ -15,8 +15,6 @@ import org.lwjgl.opengl.GL30.{glBindVertexArray, glDeleteVertexArrays, glGenVert
 import scala.collection.mutable
 
 object Breakout {
-  private var running                 = true
-  private var playing                 = false
   private var wall: Wall              = _
   private var sides: Sides            = _
   private var paddle: Paddle          = _
@@ -27,6 +25,7 @@ object Breakout {
   private var lives                   = 5
   private var canHitBricks            = true
   private var paused                  = true
+  private var playing                 = false
 
   val WIDTH: Int = 1000
   val HEIGHT: Int = 700
@@ -38,7 +37,6 @@ object Breakout {
   var colorUniform: Int = 0
   var window: Long = 0
   var program: Int = 0
-  var brick: Sprite = _
 
   def run() {
     try {
@@ -146,7 +144,6 @@ object Breakout {
 
     this.cameraToClipMatrixUniform = glGetUniformLocation(program, "cameraToClipMatrix")
     this.colorUniform = glGetUniformLocation(program, "color")
-    this.brick = Sprite(40f, 20f, Color.paddle)
   }
 
   private def rect(left: Float, top: Float, width: Float, height: Float): Array[Float] = {
@@ -209,7 +206,6 @@ object Breakout {
       paddle.update(elapsed, x(0).toInt)
       ball.update(elapsed)
       ball.setSpeed(wall.hits)
-      brick.setPosition(Vector2(200f, 0f))
 
       hitTest()
       checkWinOrLose()
@@ -253,9 +249,6 @@ object Breakout {
       lastTick = now
       if (keyPressed(GLFW_KEY_P)) {
         paused = !paused
-      }
-      if (keyPressed(GLFW_KEY_ESCAPE)) {
-        running = false
       }
       if (keyPressed(GLFW_KEY_SPACE)) {
         newGame()

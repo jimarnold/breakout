@@ -59,29 +59,25 @@ class ScoreBoard {
     val sprites = mutable.MutableList.empty[Sprite]
     first.foreach(s => {
       val rect = s.transform(Vector2(100, 10))
-      val sprite = Sprite(rect.width, rect.height, Color.grey)
-      sprite.setPosition(Vector2(rect.x, rect.y))
+      val sprite = Sprite(rect, Color.grey)
       sprites += sprite
     })
 
     second.foreach(s => {
       val rect = s.transform(Vector2(200, 10))
-      val sprite = Sprite(rect.width, rect.height, Color.grey)
-      sprite.setPosition(Vector2(rect.x, rect.y))
+      val sprite = Sprite(rect, Color.grey)
       sprites += sprite
     })
 
     third.foreach(s => {
       val rect = s.transform(Vector2(300, 10))
-      val sprite = Sprite(rect.width, rect.height, Color.grey)
-      sprite.setPosition(Vector2(rect.x, rect.y))
+      val sprite = Sprite(rect, Color.grey)
       sprites += sprite
     })
 
     lifeDigit.foreach(s => {
       val rect = s.transform(Vector2(600, 10))
-      val sprite = Sprite(rect.width, rect.height, Color.grey)
-      sprite.setPosition(Vector2(rect.x, rect.y))
+      val sprite = Sprite(rect, Color.grey)
       sprites += sprite
     })
     sprites

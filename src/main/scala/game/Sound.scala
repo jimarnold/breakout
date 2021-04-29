@@ -1,9 +1,7 @@
 package game
 
-import java.nio.{IntBuffer, ShortBuffer}
-
+import java.nio.ShortBuffer
 import game.Notes.{A3, A4, C4, C5, C6, D5, E4, F3}
-import jdk.vm.ci.code.Location.stack
 import sdl.RGB
 import org.lwjgl.openal.AL10.{alBufferData, alGenBuffers}
 import org.lwjgl.openal.AL10._

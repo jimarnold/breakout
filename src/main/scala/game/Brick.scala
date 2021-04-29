@@ -5,8 +5,7 @@ import mafs.{Rect, Vector2}
 
 class Brick(bounds: Rect, val wall: Wall) extends Hittable {
   val color = wall.getColor(bounds.y)
-  val sprite = Sprite(bounds.width, bounds.height, color)
-  sprite.setPosition(Vector2(bounds.x, bounds.y))
+  val sprite = Sprite(bounds, color)
 
   def draw(): Sprite = {
     sprite

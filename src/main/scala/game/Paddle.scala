@@ -8,8 +8,7 @@ class Paddle(var position: Vector2, gameField: Rect) extends Hittable {
   private var halfWidth = width / 2
   private val height = 20f
   private var hasHitCeiling = false
-  private val sprite = Sprite(width, height, Color.paddle)
-  sprite.setPosition(position)
+  private val sprite = Sprite(position.x, position.y, width, height, Color.paddle)
 
   def update(elapsed: Float, x: Int): Unit = {
     position = Vector2(x, position.y)

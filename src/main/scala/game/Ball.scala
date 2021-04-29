@@ -11,8 +11,7 @@ class Ball(var position: Vector2, var direction: Vector2, wall: Wall) {
   private var previousPosition = position
   private var speed = baseSpeed
   private var hasHitCeiling = false
-  private val sprite: Sprite = Sprite(width, height, wall.getColor(position.y))
-  sprite.setPosition(position)
+  private val sprite: Sprite = Sprite(position.x, position.y, width, height, wall.getColor(position.y))
 
   var lastEntity: String = ""
 
