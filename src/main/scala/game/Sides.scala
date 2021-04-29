@@ -35,7 +35,7 @@ class Sides(val screenWidth: Int, val screenHeight: Int) {
     }
   }
 
-  def draw(): Seq[Sprite] = {
+  def sprites(): Seq[Sprite] = {
     List(leftSprite, rightSprite, ceilingSprite)
   }
 }

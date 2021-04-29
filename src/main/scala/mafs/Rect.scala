@@ -1,8 +1,12 @@
 package mafs
 
 final case class Rect(x: Float, y: Float, width: Float, height: Float) {
-  def transform(v: Vector2): Rect = {
+  def translate(v: Vector2): Rect = {
     Rect(this.x + v.x, this.y + v.y, this.width, this.height)
+  }
+
+  def moveTo(x: Float, y: Float): Rect = {
+    Rect(x, y, width, height)
   }
 
   def isOverlapping(other: Rect) = {

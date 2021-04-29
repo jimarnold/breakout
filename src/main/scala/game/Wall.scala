@@ -23,7 +23,7 @@ class Wall(val gameField: Rect, val scoreboard: ScoreBoard) {
   bricks = brickSeq.toList
   val lowerBound = bricks.last.bounds().bottomRight.y
 
-  def draw(): Seq[Sprite] = {
+  def sprites(): Seq[Sprite] = {
     bricks.map(_.draw())
   }
 

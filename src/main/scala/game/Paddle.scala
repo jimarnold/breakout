@@ -22,7 +22,7 @@ class Paddle(var position: Vector2, gameField: Rect) extends Hittable {
     sprite.setPosition(position)
   }
 
-  def draw(): Seq[Sprite] = {
+  def sprites(): Seq[Sprite] = {
     List(sprite)
   }
 

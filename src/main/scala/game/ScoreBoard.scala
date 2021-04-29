@@ -4,6 +4,20 @@ import mafs.{Rect, Vector2}
 
 import scala.collection.mutable
 
+case class Digit(position: Vector2, segments: Seq[Rect]) {
+  var sprites: Seq[Sprite] = toSprites(segments)
+
+  def set(segments: Seq[Rect]): Unit = {
+    this.sprites = toSprites(segments)
+  }
+
+  def toSprites(segments: Seq[Rect]): Seq[Sprite] = {
+    segments.map(s => {
+      Sprite(s.translate(position), Color.grey)
+    })
+  }
+}
+
 class ScoreBoard {
   val zero = List(Segment.top, Segment.upperLeft, Segment.upperRight, Segment.lowerLeft, Segment.lowerRight, Segment.bottom)
   val one = List(Segment.upperMiddle, Segment.lowerMiddle)
@@ -16,7 +30,7 @@ class ScoreBoard {
   val eight = List(Segment.top, Segment.upperLeft, Segment.upperRight, Segment.middle, Segment.lowerLeft, Segment.lowerRight, Segment.bottom)
   val nine = List(Segment.top, Segment.upperLeft, Segment.upperRight, Segment.middle, Segment.lowerRight)
 
-  var digits = Map(
+  var numbers = Map(
     '0' -> zero,
     '1' -> one,
     '2' -> two,
@@ -28,59 +42,39 @@ class ScoreBoard {
     '8' -> eight,
     '9' -> nine)
 
-  var first: Seq[Rect] = zero
-  var second: Seq[Rect] = zero
-  var third: Seq[Rect] = zero
-  var lifeDigit: Seq[Rect] = five
+  var first: Digit = Digit(Vector2(100, 10), zero)
+  var second: Digit = Digit(Vector2(200, 10), zero)
+  var third: Digit = Digit(Vector2(300, 10), zero)
+  var lifeDigit: Digit = Digit(Vector2(600, 10), five)
   var score = 0
 
   def increment(amount: Int): Unit = {
     score += amount
     val scoreString = score.toString
     if (scoreString.length == 1) {
-      third = digits.getOrElse(scoreString.charAt(0), zero)
+      third.set(numbers.getOrElse(scoreString.charAt(0), zero))
     }
     if (scoreString.length == 2) {
-      second = digits.getOrElse(scoreString.charAt(0), zero)
-      third = digits.getOrElse(scoreString.charAt(1), zero)
+      second.set(numbers.getOrElse(scoreString.charAt(0), zero))
+      third.set(numbers.getOrElse(scoreString.charAt(1), zero))
     }
     if (scoreString.length == 3) {
-      first = digits.getOrElse(scoreString.charAt(0), zero)
-      second = digits.getOrElse(scoreString.charAt(1), zero)
-      third = digits.getOrElse(scoreString.charAt(2), zero)
+      first.set(numbers.getOrElse(scoreString.charAt(0), zero))
+      second.set(numbers.getOrElse(scoreString.charAt(1), zero))
+      third.set(numbers.getOrElse(scoreString.charAt(2), zero))
     }
   }
 
   def setLives(lives: Int): Unit = {
-    lifeDigit = digits.getOrElse(lives.toString.charAt(0), zero)
+    lifeDigit.set(numbers.getOrElse(lives.toString.charAt(0), zero))
   }
 
-  def draw(): Seq[Sprite] = {
+  def sprites(): Seq[Sprite] = {
     val sprites = mutable.MutableList.empty[Sprite]
-    first.foreach(s => {
-      val rect = s.transform(Vector2(100, 10))
-      val sprite = Sprite(rect, Color.grey)
-      sprites += sprite
-    })
-
-    second.foreach(s => {
-      val rect = s.transform(Vector2(200, 10))
-      val sprite = Sprite(rect, Color.grey)
-      sprites += sprite
-    })
-
-    third.foreach(s => {
-      val rect = s.transform(Vector2(300, 10))
-      val sprite = Sprite(rect, Color.grey)
-      sprites += sprite
-    })
-
-    lifeDigit.foreach(s => {
-      val rect = s.transform(Vector2(600, 10))
-      val sprite = Sprite(rect, Color.grey)
-      sprites += sprite
-    })
-    sprites
+    sprites ++= first.sprites
+    sprites ++= second.sprites
+    sprites ++= third.sprites
+    sprites ++= lifeDigit.sprites
   }
 }
 

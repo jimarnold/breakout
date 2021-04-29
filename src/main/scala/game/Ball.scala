@@ -22,7 +22,7 @@ class Ball(var position: Vector2, var direction: Vector2, wall: Wall) {
     sprite.setColor(wall.getColor(position.y))
   }
 
-  def draw(): Seq[Sprite] = {
+  def sprites(): Seq[Sprite] = {
     List(sprite)
   }
 

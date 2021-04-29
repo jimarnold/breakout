@@ -262,12 +262,12 @@ object Breakout {
 
       glUseProgram(program)
 
-      scoreboard.draw().foreach(s => renderSprite(s))
-      sides.draw().foreach(s => renderSprite(s))
-      wall.draw().foreach(s => renderSprite(s))
-      paddle.draw().foreach(s => renderSprite(s))
+      scoreboard.sprites().foreach(s => renderSprite(s))
+      sides.sprites().foreach(s => renderSprite(s))
+      wall.sprites().foreach(s => renderSprite(s))
+      paddle.sprites().foreach(s => renderSprite(s))
       if (ball != null) {
-        ball.draw().foreach(s => renderSprite(s))
+        ball.sprites().foreach(s => renderSprite(s))
       }
       glUseProgram(0)
       glfwSwapBuffers(window)

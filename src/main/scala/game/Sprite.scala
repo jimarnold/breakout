@@ -3,18 +3,21 @@ package game
 import mafs.{Matrix4, Rect, Vector2, Vector4}
 import sdl.RGB
 
-case class Sprite(var x: Float, var y: Float, var width: Float, var height: Float, var color: RGB) {
+case class Sprite(var bounds: Rect, var color: RGB) {
+  def translate(v: Vector2): Unit = {
+    bounds = bounds.translate(v)
+  }
+
   def setPosition(v: Vector2): Unit = {
-    x = v.x
-    y = v.y
+    bounds = bounds.moveTo(v.x, v.y)
   }
 
   def setWidth(w: Float): Unit = {
-    width = w
+    bounds = Rect(bounds.x, bounds.y, w, bounds.height)
   }
 
   def setHeight(h: Float): Unit = {
-    height = h
+    bounds = Rect(bounds.x, bounds.y, bounds.width, h)
   }
 
   def setColor(c: RGB): Unit = {
@@ -22,11 +25,11 @@ case class Sprite(var x: Float, var y: Float, var width: Float, var height: Floa
   }
 
   def transformMatrix(): Matrix4 = {
-    val scaleMatrix = Matrix4.scale(Vector4(width, height, 1f, 1f))
-    scaleMatrix mult Matrix4.translation(Vector4(x, y, 0f, 1f))
+    val scaleMatrix = Matrix4.scale(Vector4(bounds.width, bounds.height, 1f, 1f))
+    scaleMatrix mult Matrix4.translation(Vector4(bounds.x, bounds.y, 0f, 1f))
   }
 }
 
 object Sprite {
-  def apply(rect: Rect, color: RGB) = new Sprite(rect.x, rect.y, rect.width, rect.height, color)
+  def apply(x: Float, y: Float, width: Float, height: Float, color: RGB) = new Sprite(Rect(x, y, width, height), color)
 }
