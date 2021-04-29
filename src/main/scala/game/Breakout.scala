@@ -42,6 +42,8 @@ object Breakout {
 
   def run() {
     try {
+      Sound.init()
+
       initWindow()
       initGraphics()
       loop()
@@ -51,6 +53,7 @@ object Breakout {
       glfwDestroyWindow(window)
     }
     finally {
+      Sound.destroy()
       // Terminate GLFW and free the error callback
       glfwTerminate()
       glfwSetErrorCallback(null).free()
