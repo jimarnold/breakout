@@ -1,7 +1,6 @@
 package game
 
 import mafs.Rect
-import sdl.RGB
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -21,10 +20,10 @@ class Wall(val gameField: Rect, val scoreboard: ScoreBoard) {
   brickSeq ++= (0 to columns).map { e => new Brick(Rect(gameField.x + (e * brickWidth), initialHeight + (4*brickHeight), brickWidth, brickHeight), this) }
   brickSeq ++= (0 to columns).map { e => new Brick(Rect(gameField.x + (e * brickWidth), initialHeight + (5*brickHeight), brickWidth, brickHeight), this) }
   bricks = brickSeq.toList
-  val lowerBound = bricks.last.bounds().bottomRight.y
+  val lowerBound: Float = bricks.last.bounds().bottomRight.y
 
   def sprites(): Seq[Sprite] = {
-    bricks.map(_.draw())
+    bricks.map(_.sprite)
   }
 
   def hitTest(ball: Ball): Boolean = {
@@ -32,12 +31,12 @@ class Wall(val gameField: Rect, val scoreboard: ScoreBoard) {
 
     if (ball.position.y < lowerBound) {
       bricks.foreach(brick => {
-        if (!hit && brick.contains(ball.bounds())) {
-          Sound.brickBeep(brick.color)
+        if (!hit && brick.contains(ball)) {
+          Sound.beep(brick.color)
           brick.reflect(ball)
           removed += brick
           hit = true
-          scoreboard.increment(getPoints(brick.bounds.y))
+          scoreboard.increment(getPoints(brick.bounds().y))
         }
       })
       bricks = bricks diff removed.distinct
@@ -51,7 +50,7 @@ class Wall(val gameField: Rect, val scoreboard: ScoreBoard) {
 
   def getColor(y: Float): RGB = {
     y match {
-      case y if y < (initialHeight) =>
+      case y if y < initialHeight =>
         Color.grey
       case y if y < (initialHeight + brickHeight) =>
         Color.one

@@ -1,8 +1,9 @@
 package game
 
+import game.entities.{EntityType, Hittable}
 import mafs.{Line, Rect, Vector2}
 
-class Ball(var position: Vector2, var direction: Vector2, wall: Wall) {
+class Ball(var position: Vector2, var direction: Vector2, wall: Wall) extends Hittable {
   private val width = 10f
   private val halfWidth = width / 2f
   private val height = 10f
@@ -14,7 +15,7 @@ class Ball(var position: Vector2, var direction: Vector2, wall: Wall) {
   private val sprite: Sprite = Sprite(position.x, position.y, width, height, wall.getColor(position.y))
   private var hidden = false
 
-  var lastEntity: String = ""
+  var lastEntity: EntityType = _
 
   def update(elapsed: Float): Unit = {
     previousPosition = position
@@ -27,10 +28,10 @@ class Ball(var position: Vector2, var direction: Vector2, wall: Wall) {
     if (hidden) Seq.empty[Sprite] else List(sprite)
   }
 
-  def bounce(normal: Vector2, entity: String): Unit = {
-    if (entity != lastEntity) {
+  def bounce(normal: Vector2, entityType: EntityType): Unit = {
+    if (entityType != lastEntity) {
       direction = direction.reflect(normal).normalize()
-      lastEntity = entity
+      lastEntity = entityType
     }
   }
 
@@ -51,13 +52,13 @@ class Ball(var position: Vector2, var direction: Vector2, wall: Wall) {
   def setSpeed(hits: Int): Unit = {
     var modifier = 0
     if (hits >= 4) {
-      modifier += 100
+      modifier += 150
     }
     if (hits >= 12) {
-      modifier += 100
+      modifier += 150
     }
     if (hasHitCeiling) {
-      modifier += 100
+      modifier += 150
     }
     speed = baseSpeed + modifier
   }

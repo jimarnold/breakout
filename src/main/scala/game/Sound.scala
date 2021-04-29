@@ -1,8 +1,7 @@
 package game
 
 import java.nio.ShortBuffer
-import game.Notes.{A3, A4, C4, C5, C6, D5, E4, F3}
-import sdl.RGB
+
 import org.lwjgl.openal.AL10.{alBufferData, alGenBuffers}
 import org.lwjgl.openal.AL10._
 import org.lwjgl.openal.ALC10._
@@ -10,6 +9,8 @@ import org.lwjgl.stb.STBVorbis.stb_vorbis_decode_filename
 import org.lwjgl.system.MemoryStack
 import org.lwjgl.system.MemoryStack.{stackGet, stackPush}
 import org.lwjgl.system.libc.LibCStdlib.free
+import org.lwjgl.openal.AL
+import org.lwjgl.openal.ALC
 
 object Notes {
   val F3 = "beep_f3.ogg"
@@ -22,12 +23,12 @@ object Notes {
   val C6 = "beep_c6.ogg"
 
   val byColor = Map(
-    Color.one -> Notes.F3,
-    Color.two -> Notes.A3,
-    Color.three -> Notes.C4,
-    Color.four -> Notes.E4,
-    Color.five -> Notes.A4,
-    Color.six -> Notes.C5
+    Color.one -> Notes.C5,
+    Color.two -> Notes.A4,
+    Color.three -> Notes.E4,
+    Color.four -> Notes.C4,
+    Color.five -> Notes.A3,
+    Color.six -> Notes.F3
   )
 }
 
@@ -47,7 +48,7 @@ object Sound {
   def sideBeep(): Unit = {
     play(Notes.C6)
   }
-  def brickBeep(color: RGB): Unit = {
+  def beep(color: RGB): Unit = {
     play(Notes.byColor.getOrElse(color, Notes.F3))
   }
 
@@ -77,8 +78,8 @@ object Sound {
   }
 
   def init(): Unit = {
-    import org.lwjgl.openal.AL
-    import org.lwjgl.openal.ALC
+    import game.Notes.{A3, A4, C4, C5, C6, D5, E4, F3}
+
     val defaultDeviceName = alcGetString(0, ALC_DEFAULT_DEVICE_SPECIFIER)
     device = alcOpenDevice(defaultDeviceName)
 

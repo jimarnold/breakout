@@ -27,8 +27,8 @@ object Breakout {
   private var paused                  = true
   private var playing                 = false
 
-  val WIDTH: Int = 1000
-  val HEIGHT: Int = 700
+  val WIDTH: Int = 1080
+  val HEIGHT: Int = 780
   val projectionMatrix: Matrix4 = Matrix4.ortho(0f, WIDTH, HEIGHT, 0f, -1f, 1f)
 
   var quadVbo: Int = _
@@ -158,7 +158,7 @@ object Breakout {
   }
 
   def hitTest(): Unit = {
-    if (paddle.contains(ball.bounds())) {
+    if (paddle.contains(ball)) {
       paddle.reflect(ball)
       Sound.paddleBeep()
       canHitBricks = true

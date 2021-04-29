@@ -1,7 +1,5 @@
 package game
 
-import sdl.RGB
-
 object Color {
   val one: RGB        = RGB(200, 104, 85)
   val two: RGB        = RGB(200, 130, 75)

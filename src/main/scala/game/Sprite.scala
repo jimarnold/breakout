@@ -1,7 +1,6 @@
 package game
 
 import mafs.{Matrix4, Rect, Vector2, Vector4}
-import sdl.RGB
 
 case class Sprite(var bounds: Rect, var color: RGB) {
   def translate(v: Vector2): Unit = {

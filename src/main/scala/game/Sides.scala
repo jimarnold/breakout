@@ -1,5 +1,6 @@
 package game
 
+import game.entities.EntityType
 import mafs.{Rect, Vector2}
 
 object SideHitResult extends Enumeration {
@@ -22,12 +23,12 @@ class Sides(val screenWidth: Int, val screenHeight: Int) {
     if (leftSide.isOverlapping(ball.bounds()) ||
       rightSide.isOverlapping(ball.bounds())) {
       val normal = Vector2(0, 1)
-      ball.bounce(normal, "side")
+      ball.bounce(normal, EntityType.Sides)
       Sound.sideBeep()
       SideHitResult.Side
     } else if (ceiling.isOverlapping(ball.bounds())) {
       val normal = Vector2(1, 0)
-      ball.bounce(normal, "ceiling")
+      ball.bounce(normal, EntityType.Ceiling)
       Sound.topBeep()
       SideHitResult.Ceiling
     } else {
