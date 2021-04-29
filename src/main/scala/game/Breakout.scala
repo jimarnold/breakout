@@ -263,7 +263,7 @@ object Breakout {
       }
 
       glfwPollEvents()
-      glClearColor(0.2f, 0.3f, 0.3f, 1)
+      glClearColor(0.0f, 0.0f, 0.01f, 1)
       glClear(GL_COLOR_BUFFER_BIT)
 
       onIdle(elapsed)
