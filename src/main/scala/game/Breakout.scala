@@ -202,7 +202,6 @@ object Breakout {
 
   def onIdle(elapsed: Float): Unit = {
     if (playing && !paused) {
-
       val x = new Array[Double](1)
       val y = new Array[Double](1)
       glfwGetCursorPos(window, x, y);
@@ -268,6 +267,8 @@ object Breakout {
 
       onIdle(elapsed)
 
+      glUseProgram(program)
+
       scoreboard.draw().foreach(s => renderSprite(s))
       sides.draw().foreach(s => renderSprite(s))
       wall.draw().foreach(s => renderSprite(s))
@@ -275,7 +276,7 @@ object Breakout {
       if (ball != null) {
         ball.draw().foreach(s => renderSprite(s))
       }
-
+      glUseProgram(0)
       glfwSwapBuffers(window)
     }
 
@@ -285,7 +286,6 @@ object Breakout {
   }
 
   private def renderSprite(sprite: Sprite) = {
-    glUseProgram(program)
     glBindVertexArray(vao)
     val spriteTransform = sprite.transformMatrix()
     val clipMatrix = spriteTransform mult projectionMatrix
@@ -293,7 +293,6 @@ object Breakout {
     glUniformMatrix4fv(this.cameraToClipMatrixUniform, false, clipMatrixArray)
     glUniform4fv(this.colorUniform, sprite.color.toa())
     glDrawArrays(GL_TRIANGLES, 0, 6)
-    glUseProgram(0)
   }
 
   def NewProgram(vs: Int, fs: Int): Int = {
@@ -327,8 +326,7 @@ object Breakout {
 class KeyboardHandler(val pressed: mutable.Set[Int]) extends GLFWKeyCallback {
   def invoke(window: Long, key: Int, scancode: Int, action: Int, mods: Int) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
-      glfwSetWindowShouldClose(window, true) // We will detect this in our rendering loop
-
+      glfwSetWindowShouldClose(window, true)
     if (action == GLFW_PRESS) {
       pressed += key
     } else if(action == GLFW_RELEASE)

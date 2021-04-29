@@ -18,3 +18,9 @@ scalaVersion := "2.11.12"
 
 javaOptions in run := Seq("-XstartOnFirstThread")
 fork := true
+
+assemblyMergeStrategy in assembly := {
+  case "META-INF/MANIFEST.MF" => MergeStrategy.discard
+  case x =>
+    MergeStrategy.first
+}
