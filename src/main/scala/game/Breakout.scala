@@ -21,7 +21,7 @@ object Breakout {
   private var ball: Ball              = _
   private var scoreboard: ScoreBoard  = _
   private val pressed                 = collection.mutable.Set.empty[Int]
-  private var lastTick: Long          = 0
+  private var lastTick                = 0L
   private var lives                   = 5
   private var canHitBricks            = true
   private var paused                  = true
@@ -188,7 +188,7 @@ object Breakout {
       newBall()
     }
     if (lives == 0 || wall.isDestroyed) {
-      ball = null
+      ball.hide()
       paused = true
       playing = false
     }
@@ -201,7 +201,7 @@ object Breakout {
     if (playing && !paused) {
       val x = new Array[Double](1)
       val y = new Array[Double](1)
-      glfwGetCursorPos(window, x, y);
+      glfwGetCursorPos(window, x, y)
 
       paddle.update(elapsed, x(0).toInt)
       ball.update(elapsed)
@@ -213,20 +213,19 @@ object Breakout {
   }
 
   def newGame(): Unit = {
-    initStaticEntities()
-    newBall()
+    initEntities()
     paused = false
     playing = true
   }
 
   def introScreen(): Unit = {
-    initStaticEntities()
-    ball = null
+    initEntities()
+    ball.hide()
     paused = true
     playing = false
   }
 
-  private def initStaticEntities(): Unit = {
+  private def initEntities(): Unit = {
     lives = 5
     scoreboard = new ScoreBoard
     scoreboard.setLives(lives)
@@ -234,6 +233,7 @@ object Breakout {
     val gameField = Rect(sides.width, sides.width * 3, WIDTH - (sides.width * 2), HEIGHT - sides.width)
     wall = new Wall(gameField, scoreboard)
     paddle = new Paddle(Vector2(WIDTH / 2, HEIGHT - 20), gameField)
+    newBall()
   }
 
   def newBall(): Unit = {
@@ -262,13 +262,12 @@ object Breakout {
 
       glUseProgram(program)
 
-      scoreboard.sprites().foreach(s => renderSprite(s))
-      sides.sprites().foreach(s => renderSprite(s))
-      wall.sprites().foreach(s => renderSprite(s))
-      paddle.sprites().foreach(s => renderSprite(s))
-      if (ball != null) {
-        ball.sprites().foreach(s => renderSprite(s))
-      }
+      scoreboard.sprites ++
+      sides.sprites ++
+      wall.sprites ++
+      paddle.sprites ++
+      ball.sprites foreach(s => renderSprite(s))
+
       glUseProgram(0)
       glfwSwapBuffers(window)
     }
@@ -278,7 +277,7 @@ object Breakout {
     glDeleteProgram(this.program)
   }
 
-  private def renderSprite(sprite: Sprite) = {
+  private def renderSprite(sprite: Sprite): Unit = {
     glBindVertexArray(vao)
     val spriteTransform = sprite.transformMatrix()
     val clipMatrix = spriteTransform mult projectionMatrix

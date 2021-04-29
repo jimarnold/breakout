@@ -2,8 +2,6 @@ package game
 
 import mafs.{Rect, Vector2}
 
-import scala.collection.mutable
-
 case class Digit(position: Vector2, segments: Seq[Rect]) {
   var sprites: Seq[Sprite] = toSprites(segments)
 
@@ -30,7 +28,7 @@ class ScoreBoard {
   val eight = List(Segment.top, Segment.upperLeft, Segment.upperRight, Segment.middle, Segment.lowerLeft, Segment.lowerRight, Segment.bottom)
   val nine = List(Segment.top, Segment.upperLeft, Segment.upperRight, Segment.middle, Segment.lowerRight)
 
-  var numbers = Map(
+  val numbers = Map(
     '0' -> zero,
     '1' -> one,
     '2' -> two,
@@ -42,10 +40,10 @@ class ScoreBoard {
     '8' -> eight,
     '9' -> nine)
 
-  var first: Digit = Digit(Vector2(100, 10), zero)
-  var second: Digit = Digit(Vector2(200, 10), zero)
-  var third: Digit = Digit(Vector2(300, 10), zero)
-  var lifeDigit: Digit = Digit(Vector2(600, 10), five)
+  val first: Digit = Digit(Vector2(100, 10), zero)
+  val second: Digit = Digit(Vector2(200, 10), zero)
+  val third: Digit = Digit(Vector2(300, 10), zero)
+  val lives: Digit = Digit(Vector2(600, 10), five)
   var score = 0
 
   def increment(amount: Int): Unit = {
@@ -65,36 +63,34 @@ class ScoreBoard {
     }
   }
 
-  def setLives(lives: Int): Unit = {
-    lifeDigit.set(numbers.getOrElse(lives.toString.charAt(0), zero))
+  def setLives(count: Int): Unit = {
+    lives.set(numbers.getOrElse(count.toString.charAt(0), zero))
   }
 
   def sprites(): Seq[Sprite] = {
-    val sprites = mutable.MutableList.empty[Sprite]
-    sprites ++= first.sprites
-    sprites ++= second.sprites
-    sprites ++= third.sprites
-    sprites ++= lifeDigit.sprites
+    first.sprites ++
+    second.sprites ++
+    third.sprites ++
+    lives.sprites
   }
 }
 
 object Segment {
-  val width = 80
-  val height = 40
-  val halfHeight = height / 2
-  val halfWidth = width / 2
-  val narrow = 8
-  val halfNarrow = narrow / 2
-  val wide = narrow * 3
+  private val width = 80
+  private val height = 40
+  private val halfHeight = height / 2
+  private val halfWidth = width / 2
+  private val narrow = 8
+  private val halfNarrow = narrow / 2
+  private val wide = narrow * 3
 
-  val top = Rect(0, 0, width, narrow)
-  val upperLeft = Rect(0, 0, wide, halfHeight + halfNarrow)
-  val upperMiddle = Rect(halfWidth, 0, wide, halfHeight)
-  val upperRight = Rect(width - wide, 0, wide, halfHeight + halfNarrow)
-  val middle = Rect(wide, halfHeight - halfNarrow, width - wide, narrow)
-  val lowerLeft = Rect(0, halfHeight - halfNarrow, wide, halfHeight + halfNarrow)
-  val lowerMiddle = Rect(halfWidth, halfHeight, wide, halfHeight)
-  val lowerRight = Rect(width - wide, halfHeight - halfNarrow, wide, halfHeight + halfNarrow)
-  val bottom = Rect(0, height - narrow, width, narrow)
-
+  val top: Rect = Rect(0, 0, width, narrow)
+  val upperLeft: Rect = Rect(0, 0, wide, halfHeight + halfNarrow)
+  val upperMiddle: Rect = Rect(halfWidth, 0, wide, halfHeight)
+  val upperRight: Rect = Rect(width - wide, 0, wide, halfHeight + halfNarrow)
+  val middle: Rect = Rect(wide, halfHeight - halfNarrow, width - wide, narrow)
+  val lowerLeft: Rect = Rect(0, halfHeight - halfNarrow, wide, halfHeight + halfNarrow)
+  val lowerMiddle: Rect = Rect(halfWidth, halfHeight, wide, halfHeight)
+  val lowerRight: Rect = Rect(width - wide, halfHeight - halfNarrow, wide, halfHeight + halfNarrow)
+  val bottom: Rect = Rect(0, height - narrow, width, narrow)
 }

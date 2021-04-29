@@ -12,6 +12,7 @@ class Ball(var position: Vector2, var direction: Vector2, wall: Wall) {
   private var speed = baseSpeed
   private var hasHitCeiling = false
   private val sprite: Sprite = Sprite(position.x, position.y, width, height, wall.getColor(position.y))
+  private var hidden = false
 
   var lastEntity: String = ""
 
@@ -23,7 +24,7 @@ class Ball(var position: Vector2, var direction: Vector2, wall: Wall) {
   }
 
   def sprites(): Seq[Sprite] = {
-    List(sprite)
+    if (hidden) Seq.empty[Sprite] else List(sprite)
   }
 
   def bounce(normal: Vector2, entity: String): Unit = {
@@ -59,5 +60,13 @@ class Ball(var position: Vector2, var direction: Vector2, wall: Wall) {
       modifier += 100
     }
     speed = baseSpeed + modifier
+  }
+
+  def hide(): Unit = {
+    hidden = true
+  }
+
+  def show(): Unit = {
+    hidden = false
   }
 }
