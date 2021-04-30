@@ -1,17 +1,16 @@
 package mafs
 
-final case class Rect(x: Float, y: Float, width: Float, height: Float) {
-  val topLeft: Vector2 = Vector2(x, y)
-  val topRight: Vector2 = Vector2(x + width, y)
-  val bottomLeft: Vector2 = Vector2(x, y + height)
-  val bottomRight: Vector2 = Vector2(x + width, y + height)
+final case class Rect(topLeft: Vector2, width: Float, height: Float) {
+  val topRight: Vector2 = Vector2(topLeft.x + width, topLeft.y)
+  val bottomLeft: Vector2 = Vector2(topLeft.x, topLeft.y + height)
+  val bottomRight: Vector2 = Vector2(topLeft.x + width, topLeft.y + height)
 
   def translate(v: Vector2): Rect = {
-    moveTo(this.x + v.x, this.y + v.y)
+    moveTo(Vector2(topLeft.x + v.x, topLeft.y + v.y))
   }
 
-  def moveTo(x: Float, y: Float): Rect = {
-    Rect(x, y, width, height)
+  def moveTo(position: Vector2): Rect = {
+    Rect(position, width, height)
   }
 
   def isOverlapping(other: Rect): Boolean =  {
@@ -21,5 +20,11 @@ final case class Rect(x: Float, y: Float, width: Float, height: Float) {
     (bottomLeft.x <= other.topRight.x)
   }
 
+  def x: Float = topLeft.x
+  def y: Float = topLeft.y
   def xy: Vector2 = topLeft
+}
+
+object Rect {
+  def apply(x: Float, y: Float, width: Float, height: Float): Rect = Rect(Vector2(x,y), width, height)
 }

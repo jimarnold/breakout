@@ -9,13 +9,13 @@ class Ball(var position: Vector2, var direction: Vector2, wall: Wall) extends Hi
   private val height = 10f
   private val halfHeight = height / 2f
   private val baseSpeed = 500
+  private val sprite: Sprite = Sprite(position, width, height, wall.getColor(position.y))
+
   private var previousPosition = position
   private var speed = baseSpeed
   private var hasHitCeiling = false
-  private val sprite: Sprite = Sprite(position.x, position.y, width, height, wall.getColor(position.y))
   private var hidden = false
-
-  var lastEntity: EntityType = _
+  private var lastEntity: EntityType = _
 
   def update(elapsed: Float): Unit = {
     previousPosition = position
