@@ -55,7 +55,7 @@ object Matrix4 {
     v0.x, v0.y, v0.z, v0.w,
     v1.x, v1.y, v1.z, v1.w,
     v2.x, v2.y, v2.z, v2.w,
-    v3.x, v3.y, v3.z, v3.w,
+    v3.x, v3.y, v3.z, v3.w
   )
 
   def identity(): Matrix4 = Matrix4(
