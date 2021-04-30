@@ -1,6 +1,7 @@
 package game
 
 import java.nio.ShortBuffer
+import java.nio.file.Paths
 
 import game.graphics.{Color, RGB}
 import org.lwjgl.openal.AL10.{alBufferData, alGenBuffers}
@@ -62,7 +63,7 @@ object Sound {
     try {
       val channelsBuffer = stack.mallocInt(1)
       val sampleRateBuffer = stack.mallocInt(1)
-      rawAudioBuffer = stb_vorbis_decode_filename(fileName, channelsBuffer, sampleRateBuffer)
+      rawAudioBuffer = stb_vorbis_decode_filename(Paths.get("src/main/resources", fileName).toString, channelsBuffer, sampleRateBuffer)
       channels = channelsBuffer.get(0)
       sampleRate = sampleRateBuffer.get(0)
     } finally if (stack != null) stack.close()
