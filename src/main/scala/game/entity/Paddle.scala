@@ -21,8 +21,8 @@ case class Paddle(initialPosition: Vector2, gameField: Rect) extends Hittable {
     x match {
       case _ if x < gameField.x =>
         gameField.x
-      case _ if x + initialWidth > gameField.x + gameField.width =>
-        (gameField.x + gameField.width) - initialWidth
+      case _ if x + sprite.bounds.width > gameField.x + gameField.width =>
+        (gameField.x + gameField.width) - sprite.bounds.width
       case _ => x
     }
   }
