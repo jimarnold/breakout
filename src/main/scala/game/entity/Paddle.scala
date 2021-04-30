@@ -3,27 +3,28 @@ package game.entity
 import game.graphics.{Color, Sprite}
 import mafs.{Rect, Vector2}
 
-class Paddle(var position: Vector2, gameField: Rect) extends Hittable {
-  private val width = gameField.width / 8f
-  private val halfWidth = width / 2f
+case class Paddle(initialPosition: Vector2, gameField: Rect) extends Hittable {
+  private val initialWidth = gameField.width / 8f
   private val height = gameField.height / 50f
-  private var hasHitCeiling = false
-  private val sprite = Sprite(position, width, height, Color.paddle)
+  private val sprite = Sprite(initialPosition, initialWidth, height, Color.paddle)
+  private val minWidth = initialWidth - (initialWidth / 3f)
 
   def update(elapsed: Float, x: Int): Unit = {
-    if (x == position.x) {
+    if (x == sprite.position.x) {
       return
     }
 
-    position = Vector2(x, position.y)
+    sprite.setXPosition(constrainToGameField(x))
+  }
 
-    if (position.x + width > gameField.x + gameField.width) {
-      position = Vector2((gameField.x + gameField.width) - width, position.y)
+  private def constrainToGameField(x: Int): Float = {
+    x match {
+      case _ if x < gameField.x =>
+        gameField.x
+      case _ if x + initialWidth > gameField.x + gameField.width =>
+        (gameField.x + gameField.width) - initialWidth
+      case _ => x
     }
-    if (position.x < gameField.x) {
-      position = Vector2(gameField.x, position.y)
-    }
-    sprite.setPosition(position)
   }
 
   def sprites(): Seq[Sprite] = {
@@ -33,6 +34,7 @@ class Paddle(var position: Vector2, gameField: Rect) extends Hittable {
   def reflect(ball: Ball): Unit = {
     val bounds: Rect = this.bounds()
     val incomingLine = ball.progressLine()
+    val halfWidth = bounds.width / 2f
 
     val normal = if (incomingLine.p2.x >= bounds.x + halfWidth && incomingLine.p1.x >= incomingLine.p2.x) {
       // coming from the right, hitting right, will bounce back
@@ -69,14 +71,7 @@ class Paddle(var position: Vector2, gameField: Rect) extends Hittable {
   }
 
   def hitCeiling(): Unit = {
-    if (!hasHitCeiling) {
-      shrink()
-      hasHitCeiling = true
-    }
-  }
-
-  def shrink(): Unit = {
-    sprite.setWidth(width - (width / 3f))
+    sprite.setWidth(minWidth)
   }
 
   def bounds(): Rect = {

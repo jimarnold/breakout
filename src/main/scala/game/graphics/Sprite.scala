@@ -3,6 +3,8 @@ package game.graphics
 import mafs.{Matrix4, Rect, Vector2}
 
 case class Sprite(var bounds: Rect, var color: RGB) {
+  def position: Vector2 = bounds.topLeft
+
   def translate(v: Vector2): Unit = {
     bounds = bounds.translate(v)
   }
@@ -11,12 +13,16 @@ case class Sprite(var bounds: Rect, var color: RGB) {
     bounds = bounds.moveTo(v)
   }
 
-  def setWidth(w: Float): Unit = {
-    bounds = Rect(bounds.xy, w, bounds.height)
+  def setXPosition(x: Float): Unit = {
+    bounds = bounds.moveTo(Vector2(x, position.y))
   }
 
-  def setHeight(h: Float): Unit = {
-    bounds = Rect(bounds.xy, bounds.width, h)
+  def setWidth(width: Float): Unit = {
+    bounds = Rect(bounds.xy, width, bounds.height)
+  }
+
+  def setHeight(height: Float): Unit = {
+    bounds = Rect(bounds.xy, bounds.width, height)
   }
 
   def setColor(c: RGB): Unit = {

@@ -17,12 +17,12 @@ import org.lwjgl.opengl.GL30.{glBindVertexArray, glDeleteVertexArrays, glGenVert
 import scala.collection.mutable
 
 object Breakout {
+
   private var wall: Wall              = _
   private var sides: Sides            = _
   private var paddle: Paddle          = _
   private var ball: Ball              = _
   private var scoreboard: ScoreBoard  = _
-  private val pressed                 = collection.mutable.Set.empty[Int]
   private var lastTick                = 0L
   private var lives                   = 5
   private var canHitBricks            = true
@@ -83,7 +83,7 @@ object Breakout {
       throw new RuntimeException("Failed to create the GLFW window!")
 
     // Setup a key callback. It will be called every time a key is pressed, repeated or released.
-    val kb = new KeyboardHandler(pressed)
+    val kb = new KeyboardHandler()
     glfwSetKeyCallback(window, kb)
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN)
 
@@ -196,22 +196,26 @@ object Breakout {
     }
   }
 
-  def keyPressed(key: Int): Boolean =
-    pressed.contains(key)
-
   def onIdle(elapsed: Float): Unit = {
     if (playing && !paused) {
-      val x = new Array[Double](1)
-      val y = new Array[Double](1)
-      glfwGetCursorPos(window, x, y)
-
-      paddle.update(elapsed, x(0).toInt)
+      paddle.update(elapsed, getCursorXPosition)
       ball.update(elapsed)
       ball.setSpeed(wall.hits)
 
       hitTest()
       checkWinOrLose()
     }
+  }
+
+  def togglePause(): Unit = {
+    paused = !paused
+  }
+
+  val cursorX = new Array[Double](1)
+  val cursorY = new Array[Double](1)
+  private def getCursorXPosition = {
+    glfwGetCursorPos(window, cursorX, cursorY)
+    cursorX(0).toInt
   }
 
   def newGame(): Unit = {
@@ -234,7 +238,7 @@ object Breakout {
     sides = new Sides(WIDTH, HEIGHT)
     val gameField = Rect(sides.width, sides.width * 3, WIDTH - (sides.width * 2), HEIGHT - sides.width)
     wall = new Wall(gameField, scoreboard)
-    paddle = new Paddle(Vector2(WIDTH / 2, HEIGHT - 20), gameField)
+    paddle = Paddle(Vector2(WIDTH / 2, HEIGHT - 20), gameField)
     newBall()
   }
 
@@ -249,12 +253,6 @@ object Breakout {
       val now = System.nanoTime()
       val elapsed = (now - lastTick).toFloat / 1000000000
       lastTick = now
-      if (keyPressed(GLFW_KEY_P)) {
-        paused = !paused
-      }
-      if (keyPressed(GLFW_KEY_SPACE)) {
-        newGame()
-      }
 
       glfwPollEvents()
       glClearColor(0.0f, 0.0f, 0.01f, 1)
@@ -317,13 +315,13 @@ object Breakout {
   }
 }
 
-class KeyboardHandler(val pressed: mutable.Set[Int]) extends GLFWKeyCallback {
+class KeyboardHandler() extends GLFWKeyCallback {
   def invoke(window: Long, key: Int, scancode: Int, action: Int, mods: Int) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
       glfwSetWindowShouldClose(window, true)
-    if (action == GLFW_PRESS) {
-      pressed += key
-    } else if(action == GLFW_RELEASE)
-      pressed -= key
+    if (key == GLFW_KEY_P && action == GLFW_RELEASE)
+      Breakout.togglePause()
+    if (key == GLFW_KEY_SPACE && action == GLFW_RELEASE)
+      Breakout.newGame()
   }
 }
