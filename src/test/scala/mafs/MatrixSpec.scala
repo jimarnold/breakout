@@ -5,7 +5,7 @@ import org.scalatest.funsuite.AnyFunSuite
 class MatrixSpec extends AnyFunSuite {
 
   test("Translation matrix should move vector") {
-    val matrix = Matrix4.translation(Vector4(1f,2f,3f,1f))
+    val matrix = Matrix4.translate(Vector4(1f,2f,3f,1f))
     val v = Vector4(2f, 3f, 4f, 1f)
 
     val result = matrix.mult(v)

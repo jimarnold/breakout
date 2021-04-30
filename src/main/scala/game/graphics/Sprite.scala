@@ -1,6 +1,6 @@
 package game.graphics
 
-import mafs.{Matrix4, Rect, Vector2, Vector4}
+import mafs.{Matrix4, Rect, Vector2}
 
 case class Sprite(var bounds: Rect, var color: RGB) {
   def translate(v: Vector2): Unit = {
@@ -24,8 +24,7 @@ case class Sprite(var bounds: Rect, var color: RGB) {
   }
 
   def transformMatrix(): Matrix4 = {
-    val scaleMatrix = Matrix4.scale(Vector4(bounds.width, bounds.height, 1f, 1f))
-    scaleMatrix mult Matrix4.translation(Vector4(bounds.x, bounds.y, 0f, 1f))
+    Matrix4.scale(bounds.width, bounds.height) mult Matrix4.translate(bounds.xy)
   }
 }
 

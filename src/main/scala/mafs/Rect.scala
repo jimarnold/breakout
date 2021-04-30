@@ -20,4 +20,6 @@ final case class Rect(x: Float, y: Float, width: Float, height: Float) {
     (topRight.x >= other.bottomLeft.x) &&
     (bottomLeft.x <= other.topRight.x)
   }
+
+  def xy: Vector2 = topLeft
 }
