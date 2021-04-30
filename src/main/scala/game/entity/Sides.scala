@@ -1,7 +1,8 @@
 package game.entity
 
+import game.audio.Sound
 import game.graphics.{Color, Sprite}
-import game.{Sound, graphics}
+import game.graphics
 import mafs.{Rect, Vector2}
 
 object SideHitResult extends Enumeration {

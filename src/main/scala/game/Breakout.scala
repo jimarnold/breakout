@@ -1,5 +1,6 @@
 package game
 
+import game.audio.Sound
 import game.entity.{Ball, Paddle, ScoreBoard, SideHitResult, Sides, Wall}
 import game.graphics.Sprite
 import mafs._
