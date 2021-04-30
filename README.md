@@ -1,9 +1,12 @@
 # breakout
 a simple breakout clone
 
+# Requirements:
+
+Scala 2.11.12 or higher.
 Should run with `sbt run`
 
-Probably OSX only.
+Probably OSX only. Works on my machine.
 
 # Controls:
 
