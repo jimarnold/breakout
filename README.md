@@ -1,10 +1,12 @@
-# breakout
-a simple breakout clone
+# Breakout
+
+A simple breakout clone
 
 # Requirements:
 
-Scala 2.11.12 or higher.
-Should run with `sbt run`
+To run the game: JDK 8 or higher.
+
+To compile and run from source: Scala 2.11.12
 
 Probably OSX only. Works on my machine.
 
