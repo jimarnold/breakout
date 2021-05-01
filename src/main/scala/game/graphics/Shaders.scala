@@ -13,9 +13,9 @@ object VertexShader {
     in vec2 position;
     out vec4 fs_color;
     uniform vec4 color;
-    uniform mat4 cameraToClipMatrix;
+    uniform mat4 viewMatrix;
     void main() {
-        gl_Position = cameraToClipMatrix * vec4(position.x, position.y, 0.0, 1.0);
+        gl_Position = viewMatrix * vec4(position.x, position.y, 0.0, 1.0);
         fs_color = color;
     }"""))
 }

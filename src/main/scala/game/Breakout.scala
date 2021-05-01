@@ -9,7 +9,6 @@ import org.lwjgl.opengl._
 import org.lwjgl.glfw.Callbacks._
 import org.lwjgl.glfw.GLFW._
 import org.lwjgl.opengl.GL11._
-import org.lwjgl.opengl.GL20._
 import org.lwjgl.system.MemoryUtil._
 
 object Breakout {
@@ -196,15 +195,19 @@ object Breakout {
       lastTick = now
 
       glfwPollEvents()
-      glClearColor(0.0f, 0.0f, 0.01f, 1)
-      glClear(GL_COLOR_BUFFER_BIT)
+      clearScreen()
 
       onIdle(elapsed)
 
-      allSprites foreach(sprite => Quad.render(projectionMatrix, sprite))
+      Quad.render(allSprites, projectionMatrix)
 
       glfwSwapBuffers(window)
     }
+  }
+
+  private def clearScreen(): Unit = {
+    glClearColor(0.0f, 0.0f, 0.01f, 1)
+    glClear(GL_COLOR_BUFFER_BIT)
   }
 
   private def allSprites = {

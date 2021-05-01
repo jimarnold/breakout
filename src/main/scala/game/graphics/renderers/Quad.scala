@@ -1,37 +1,35 @@
 package game.graphics.renderers
 
-import game.graphics.{FragmentShader, Program, Sprite, VertexShader}
+import game.graphics.{FragmentShader, Program, Sprite, VertexArray, VertexBuffer, VertexShader}
 import mafs.Matrix4
-import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL11.{GL_FLOAT, GL_TRIANGLES, glDrawArrays}
-import org.lwjgl.opengl.GL15._
 import org.lwjgl.opengl.GL20._
-import org.lwjgl.opengl.GL30.{glBindVertexArray, glDeleteVertexArrays, glGenVertexArrays}
 import org.lwjgl.system.MemoryUtil.NULL
 
 object Quad {
-  var cameraToClipMatrixUniform: Int = 0
   var program: Program = _
+  var vbo: VertexBuffer = _
+  var vao: VertexArray = _
+  var viewMatrixUniform: Int = 0
   var colorUniform: Int = 0
-  var vbo: Int = _
-  var vao: Int = 0
 
-  def render(camera: Matrix4, sprite: Sprite): Unit = {
-    glUseProgram(program.ptr)
-    glBindVertexArray(vao)
-    val spriteTransform = sprite.transformMatrix()
-    val clipMatrix = spriteTransform mult camera
-    val clipMatrixArray = clipMatrix.toa()
-    glUniformMatrix4fv(this.cameraToClipMatrixUniform, false, clipMatrixArray)
-    glUniform4fv(this.colorUniform, sprite.color.toa())
-    glDrawArrays(GL_TRIANGLES, 0, 6)
-    glUseProgram(0)
+  def render(sprites: Seq[Sprite], camera: Matrix4): Unit = {
+    program.use()
+    vao.bind()
+
+    sprites.foreach(sprite => {
+      val spriteTransform = sprite.transformMatrix()
+      val viewMatrix = (spriteTransform mult camera).toa()
+      glUniformMatrix4fv(this.viewMatrixUniform, false, viewMatrix)
+      glUniform4fv(this.colorUniform, sprite.color.toa())
+      glDrawArrays(GL_TRIANGLES, 0, 6)
+    })
   }
 
   def destroy(): Unit = {
-    glDeleteVertexArrays(this.vao)
-    glDeleteBuffers(this.vbo)
-    glDeleteProgram(this.program.ptr)
+    vao.delete()
+    vbo.delete()
+    program.delete()
   }
 
   def init(): Unit = {
@@ -44,18 +42,19 @@ object Quad {
 
     val vertices = rect(left, top, width, height)
 
-    vbo = glGenBuffers
-    glBindBuffer(GL_ARRAY_BUFFER, vbo)
-    glBufferData(GL_ARRAY_BUFFER, BufferUtils.createFloatBuffer(vertices.length).put(vertices).flip, GL_STATIC_DRAW)
+    vbo = VertexBuffer()
+    vbo.bind()
 
-    vao = glGenVertexArrays()
-    glBindVertexArray(vao)
-    glEnableVertexAttribArray(0)
-    glBindBuffer(GL_ARRAY_BUFFER, vbo)
+    vbo.load(vertices)
+
+    vao = VertexArray()
+    vao.bind()
+    vao.enable()
+
     glVertexAttribPointer(0, 2, GL_FLOAT, false, 0, NULL)
-    glBindBuffer(GL_ARRAY_BUFFER, 0)
+    vbo.unbind()
 
-    this.cameraToClipMatrixUniform = glGetUniformLocation(program.ptr, "cameraToClipMatrix")
+    this.viewMatrixUniform = glGetUniformLocation(program.ptr, "viewMatrix")
     this.colorUniform = glGetUniformLocation(program.ptr, "color")
   }
 

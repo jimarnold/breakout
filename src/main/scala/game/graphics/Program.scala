@@ -4,7 +4,8 @@ import org.lwjgl.opengl.GL11._
 import org.lwjgl.opengl.GL20._
 
 case class Program(ptr: Int) {
-
+  def delete(): Unit = glDeleteProgram(ptr)
+  def use(): Unit = glUseProgram(ptr)
 }
 
 object Program {
