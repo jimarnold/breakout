@@ -29,7 +29,7 @@ case class Sprite(var bounds: Rect, var color: RGB) {
     color = c
   }
 
-  def transformMatrix(): Matrix4 = {
+  def locate(): Matrix4 = {
     Matrix4.scale(bounds.width, bounds.height) mult Matrix4.translate(bounds.xy)
   }
 }

@@ -1,6 +1,6 @@
 package game.graphics.renderers
 
-import game.graphics.{FragmentShader, Program, Sprite, VertexArray, VertexBuffer, VertexShader}
+import game.graphics.{Camera, FragmentShader, Program, Sprite, VertexArray, VertexBuffer, VertexShader}
 import mafs.Matrix4
 import org.lwjgl.opengl.GL11.{GL_FLOAT, GL_TRIANGLES, glDrawArrays}
 import org.lwjgl.opengl.GL20._
@@ -13,14 +13,12 @@ object Quad {
   var viewMatrixUniform: Int = 0
   var colorUniform: Int = 0
 
-  def render(sprites: Seq[Sprite], camera: Matrix4): Unit = {
+  def render(sprites: Seq[Sprite], camera: Camera): Unit = {
     program.use()
     vao.bind()
 
     sprites.foreach(sprite => {
-      val spriteTransform = sprite.transformMatrix()
-      val viewMatrix = (spriteTransform mult camera).toa()
-      glUniformMatrix4fv(this.viewMatrixUniform, false, viewMatrix)
+      glUniformMatrix4fv(this.viewMatrixUniform, false, camera.view(sprite))
       glUniform4fv(this.colorUniform, sprite.color.toa())
       glDrawArrays(GL_TRIANGLES, 0, 6)
     })

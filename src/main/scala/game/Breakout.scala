@@ -2,6 +2,7 @@ package game
 
 import game.audio.Sound
 import game.entity.{Ball, Paddle, ScoreBoard, SideHitResult, Sides, Wall}
+import game.graphics.Camera
 import game.graphics.renderers.Quad
 import mafs._
 import org.lwjgl.glfw._
@@ -12,6 +13,10 @@ import org.lwjgl.opengl.GL11._
 import org.lwjgl.system.MemoryUtil._
 
 object Breakout {
+  private val WIDTH: Int = 1080
+  private val HEIGHT: Int = 780
+  private var window: Long = 0
+  private val camera: Camera = Camera(WIDTH, HEIGHT)
 
   private var wall: Wall              = _
   private var sides: Sides            = _
@@ -24,18 +29,12 @@ object Breakout {
   private var paused                  = true
   private var playing                 = false
 
-  val WIDTH: Int = 1080
-  val HEIGHT: Int = 780
-  val projectionMatrix: Matrix4 = Matrix4.ortho(0f, WIDTH, HEIGHT, 0f, -1f, 1f)
-
-  var window: Long = 0
-
   def run() {
     try {
       Sound.init()
 
-      initWindow()
-      initGraphics()
+      initGlfw()
+      initOpenGL()
       loop()
 
       // Free the window callbacks and destroy the window
@@ -50,7 +49,7 @@ object Breakout {
     }
   }
 
-  private def initWindow() {
+  private def initGlfw() {
     // Setup an error callback. The default implementation
     // will print the error message in System.err.
     GLFWErrorCallback.createPrint(System.err).set()
@@ -65,7 +64,7 @@ object Breakout {
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE)
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE)
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE) // the window will stay hidden after creation
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE) // the window will be resizable
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE)
 
     window = glfwCreateWindow(WIDTH, HEIGHT, "BREAKOUT", NULL, NULL)
 
@@ -77,19 +76,20 @@ object Breakout {
     glfwSetKeyCallback(window, kb)
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN)
 
-    val vidmode: GLFWVidMode = glfwGetVideoMode(glfwGetPrimaryMonitor())
-    // Center our window
+    val monitor = glfwGetPrimaryMonitor()
+    val videoMode: GLFWVidMode = glfwGetVideoMode(monitor)
+
     glfwSetWindowPos(
       window,
-      (vidmode.width() - WIDTH) / 2,
-      (vidmode.height() - HEIGHT) / 2)
+      (videoMode.width() - WIDTH) / 2,
+      (videoMode.height() - HEIGHT) / 2)
 
     glfwMakeContextCurrent(window)
     glfwSwapInterval(1)
     glfwShowWindow(window)
   }
 
-  def initGraphics(): Unit = {
+  def initOpenGL(): Unit = {
     GL.createCapabilities()
 
     val fbWidth = new Array[Int](1)
@@ -199,7 +199,7 @@ object Breakout {
 
       onIdle(elapsed)
 
-      Quad.render(allSprites, projectionMatrix)
+      Quad.render(allSprites, camera)
 
       glfwSwapBuffers(window)
     }
