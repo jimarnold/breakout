@@ -14,6 +14,7 @@ import game.entity.SideHitResult.SideHitResult
 
 class Sides(val screenWidth: Int, val screenHeight: Int) {
   val width: Int = screenWidth / 20
+  //TODO: make this screen-size independent
   private val leftSide = Rect(0, 60, width, screenHeight)
   private val rightSide = Rect(screenWidth - width, 60, width, screenHeight)
   private val ceiling = Rect(width, 60, screenWidth - (2 * width), width)

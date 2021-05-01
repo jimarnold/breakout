@@ -2,20 +2,15 @@ package game
 
 import game.audio.Sound
 import game.entity.{Ball, Paddle, ScoreBoard, SideHitResult, Sides, Wall}
-import game.graphics.Sprite
+import game.graphics.renderers.Quad
 import mafs._
 import org.lwjgl.glfw._
 import org.lwjgl.opengl._
 import org.lwjgl.glfw.Callbacks._
 import org.lwjgl.glfw.GLFW._
 import org.lwjgl.opengl.GL11._
-import org.lwjgl.opengl.GL15._
 import org.lwjgl.opengl.GL20._
 import org.lwjgl.system.MemoryUtil._
-import org.lwjgl.BufferUtils
-import org.lwjgl.opengl.GL30.{glBindVertexArray, glDeleteVertexArrays, glGenVertexArrays}
-
-import scala.collection.mutable
 
 object Breakout {
 
@@ -34,12 +29,7 @@ object Breakout {
   val HEIGHT: Int = 780
   val projectionMatrix: Matrix4 = Matrix4.ortho(0f, WIDTH, HEIGHT, 0f, -1f, 1f)
 
-  var quadVbo: Int = _
-  var vao: Int = 0
-  var cameraToClipMatrixUniform: Int = 0
-  var colorUniform: Int = 0
   var window: Long = 0
-  var program: Int = 0
 
   def run() {
     try {
@@ -107,57 +97,7 @@ object Breakout {
     val fbHeight = new Array[Int](1)
     glfwGetFramebufferSize(window, fbWidth, fbHeight)
     glViewport(0, 0, fbWidth(0), fbHeight(0))
-
-    val vs = NewShader(GL_VERTEX_SHADER, """#version 400
-    in vec2 position;
-    out vec4 fs_color;
-    uniform vec4 color;
-    uniform mat4 cameraToClipMatrix;
-    void main() {
-        gl_Position = cameraToClipMatrix * vec4(position.x, position.y, 0.0, 1.0);
-        fs_color = color;
-    }""")
-
-    val fs = NewShader(GL_FRAGMENT_SHADER, """#version 400
-    in vec4 fs_color;
-    out vec4 frag_color;
-    void main(void) {
-      frag_color = fs_color;
-    }""")
-
-    program = NewProgram(vs, fs)
-
-    quadVbo = glGenBuffers
-    val width = 1f
-    val height = 1f
-    val left = 0f
-    val top = 0f
-
-    val vertices = rect(left, top, width, height)
-
-    glBindBuffer(GL_ARRAY_BUFFER, quadVbo)
-    glBufferData(GL_ARRAY_BUFFER, BufferUtils.createFloatBuffer(vertices.length).put(vertices).flip, GL_STATIC_DRAW)
-
-    vao = glGenVertexArrays()
-    glBindVertexArray(vao)
-    glEnableVertexAttribArray(0)
-    glBindBuffer(GL_ARRAY_BUFFER, quadVbo)
-    glVertexAttribPointer(0, 2, GL_FLOAT, false, 0, NULL)
-    glBindBuffer(GL_ARRAY_BUFFER, 0)
-
-    this.cameraToClipMatrixUniform = glGetUniformLocation(program, "cameraToClipMatrix")
-    this.colorUniform = glGetUniformLocation(program, "color")
-  }
-
-  private def rect(left: Float, top: Float, width: Float, height: Float): Array[Float] = {
-     Array(
-      left, top,
-      left, top + height,
-      left + width, top,
-      left, top + height,
-      left + width, top + height,
-      left + width, top
-    )
+    Quad.init()
   }
 
   def hitTest(): Unit = {
@@ -261,58 +201,18 @@ object Breakout {
 
       onIdle(elapsed)
 
-      glUseProgram(program)
+      allSprites foreach(sprite => Quad.render(projectionMatrix, sprite))
 
-      scoreboard.sprites ++
-      sides.sprites ++
-      wall.sprites ++
-      paddle.sprites ++
-      ball.sprites foreach(s => renderSprite(s))
-
-      glUseProgram(0)
       glfwSwapBuffers(window)
     }
-
-    glDeleteVertexArrays(this.vao)
-    glDeleteBuffers(this.quadVbo)
-    glDeleteProgram(this.program)
   }
 
-  private def renderSprite(sprite: Sprite): Unit = {
-    glBindVertexArray(vao)
-    val spriteTransform = sprite.transformMatrix()
-    val clipMatrix = spriteTransform mult projectionMatrix
-    val clipMatrixArray = clipMatrix.toa()
-    glUniformMatrix4fv(this.cameraToClipMatrixUniform, false, clipMatrixArray)
-    glUniform4fv(this.colorUniform, sprite.color.toa())
-    glDrawArrays(GL_TRIANGLES, 0, 6)
-  }
-
-  def NewProgram(vs: Int, fs: Int): Int = {
-    val program = glCreateProgram()
-
-    glAttachShader(program, vs)
-    glAttachShader(program, fs)
-    glLinkProgram(program)
-    val linked = glGetProgrami(program, GL_LINK_STATUS)
-    if (linked == GL_FALSE) {
-      println(glGetProgramInfoLog(program))
-      throw new AssertionError("Could not link program")
-    }
-    glDeleteShader(vs)
-    glDeleteShader(fs)
-    program
-  }
-
-  def NewShader(shaderType: Int, source: String) : Int = {
-    val s = glCreateShader(shaderType)
-    glShaderSource(s, source)
-    glCompileShader(s)
-    val status = glGetShaderi(s, GL_COMPILE_STATUS)
-    if (status == GL_FALSE) {
-      println(glGetShaderInfoLog(s))
-    }
-    s
+  private def allSprites = {
+    scoreboard.sprites ++
+    sides.sprites ++
+    wall.sprites ++
+    paddle.sprites ++
+    ball.sprites
   }
 }
 
