@@ -3,12 +3,12 @@ package game.entity
 import game.graphics.Sprite
 import mafs.{Line, Rect, Vector2}
 
-class Ball(var position: Vector2, var direction: Vector2, wall: Wall) extends Hittable {
-  private val width = 10f
+class Ball(var position: Vector2, var direction: Vector2, gameField: Rect, wall: Wall) extends Hittable {
+  private val width = gameField.width / 80f
   private val halfWidth = width / 2f
-  private val height = 10f
+  private val height = gameField.height / 80f
   private val halfHeight = height / 2f
-  private val baseSpeed = 500
+  private val baseSpeed = gameField.height / 1.5f
   private val sprite: Sprite = Sprite(position, width, height, wall.getColor(position.y))
 
   private var previousPosition = position

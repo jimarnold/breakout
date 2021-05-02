@@ -13,11 +13,12 @@ object SideHitResult extends Enumeration {
 import game.entity.SideHitResult.SideHitResult
 
 class Sides(val screenWidth: Int, val screenHeight: Int) {
-  val width: Int = screenWidth / 20
+  val width: Float = screenWidth / 20f
+  private val yOffset = screenHeight / 12f
   //TODO: make this screen-size independent
-  private val leftSide = Rect(0, 60, width, screenHeight)
-  private val rightSide = Rect(screenWidth - width, 60, width, screenHeight)
-  private val ceiling = Rect(width, 60, screenWidth - (2 * width), width)
+  private val leftSide = Rect(0, yOffset, width, screenHeight)
+  private val rightSide = Rect(screenWidth - width, yOffset, width, screenHeight)
+  private val ceiling = Rect(width, yOffset, screenWidth - (2 * width), width)
   private val leftSprite = Sprite(leftSide, Color.grey)
   private val rightSprite = graphics.Sprite(rightSide, Color.grey)
   private val ceilingSprite = graphics.Sprite(ceiling, Color.grey)
