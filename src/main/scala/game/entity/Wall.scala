@@ -1,7 +1,7 @@
 package game.entity
 
 import game.audio.Sound
-import game.graphics.{Color, RGB, Sprite}
+import game.graphics.{Color, Sprite}
 import mafs.Rect
 
 import scala.collection.mutable.ArrayBuffer
@@ -50,7 +50,7 @@ class Wall(val gameField: Rect, val scoreboard: ScoreBoard) {
 
   def isDestroyed: Boolean = bricks.isEmpty
 
-  def getColor(y: Float): RGB = {
+  def getColor(y: Float): Color = {
     y match {
       case y if y < initialHeight =>
         Color.grey

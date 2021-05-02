@@ -2,7 +2,7 @@ package game.graphics
 
 import mafs.{Matrix4, Rect, Vector2}
 
-case class Sprite(var bounds: Rect, var color: RGB) {
+case class Sprite(var bounds: Rect, var color: Color) {
   def position: Vector2 = bounds.topLeft
 
   def translate(v: Vector2): Unit = {
@@ -25,7 +25,7 @@ case class Sprite(var bounds: Rect, var color: RGB) {
     bounds = Rect(bounds.xy, bounds.width, height)
   }
 
-  def setColor(c: RGB): Unit = {
+  def setColor(c: Color): Unit = {
     color = c
   }
 
@@ -35,6 +35,6 @@ case class Sprite(var bounds: Rect, var color: RGB) {
 }
 
 object Sprite {
-  def apply(x: Float, y: Float, width: Float, height: Float, color: RGB): Sprite = Sprite(Rect(x, y, width, height), color)
-  def apply(position: Vector2, width: Float, height: Float, color: RGB): Sprite = Sprite(Rect(position, width, height), color)
+  def apply(x: Float, y: Float, width: Float, height: Float, color: Color): Sprite = Sprite(Rect(x, y, width, height), color)
+  def apply(position: Vector2, width: Float, height: Float, color: Color): Sprite = Sprite(Rect(position, width, height), color)
 }

@@ -3,7 +3,7 @@ package game.audio
 import java.nio.ShortBuffer
 import java.nio.file.Paths
 
-import game.graphics.RGB
+import game.graphics.Color
 import org.lwjgl.openal.AL10._
 import org.lwjgl.openal.ALC10._
 import org.lwjgl.openal.{AL, ALC}
@@ -29,7 +29,7 @@ object Sound {
     play(Notes.C6)
   }
 
-  def beep(color: RGB): Unit = {
+  def beep(color: Color): Unit = {
     play(Notes.byColor.getOrElse(color, Notes.F3))
   }
 
