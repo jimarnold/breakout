@@ -7,46 +7,43 @@ import mafs.Rect
 import scala.collection.mutable.ArrayBuffer
 
 class Wall(val gameField: Rect, val scoreboard: ScoreBoard) {
-  private var bricks: List[Brick] = _
-  private val columns = 17 // 0-based
-  private val removed = ArrayBuffer.empty[Brick]
-  private val brickWidth = gameField.width / 18f
-  private val brickHeight = 20
-  private val initialHeight = gameField.y + 30
-  private var brickSeq = IndexedSeq.empty[Brick]
+  private val rows = 6
+  private val columns = 18
+  private val brickWidth = gameField.width / columns
+  private val brickHeight = brickWidth / 3
+  private val initialHeight = gameField.y + brickHeight
+  private val bricks: ArrayBuffer[Brick] = ArrayBuffer.empty[Brick]
+  val lowerBound: Float = (rows * brickHeight) + initialHeight
 
-  brickSeq ++= (0 to columns).map { e => new Brick(Rect(gameField.x + (e * brickWidth), initialHeight , brickWidth, brickHeight), this) }
-  brickSeq ++= (0 to columns).map { e => new Brick(Rect(gameField.x + (e * brickWidth), initialHeight + brickHeight, brickWidth, brickHeight), this) }
-  brickSeq ++= (0 to columns).map { e => new Brick(Rect(gameField.x + (e * brickWidth), initialHeight + (2*brickHeight), brickWidth, brickHeight), this) }
-  brickSeq ++= (0 to columns).map { e => new Brick(Rect(gameField.x + (e * brickWidth), initialHeight + (3*brickHeight), brickWidth, brickHeight), this) }
-  brickSeq ++= (0 to columns).map { e => new Brick(Rect(gameField.x + (e * brickWidth), initialHeight + (4*brickHeight), brickWidth, brickHeight), this) }
-  brickSeq ++= (0 to columns).map { e => new Brick(Rect(gameField.x + (e * brickWidth), initialHeight + (5*brickHeight), brickWidth, brickHeight), this) }
-  bricks = brickSeq.toList
-  val lowerBound: Float = bricks.last.bounds().bottomRight.y
+  (0 until rows).map { i =>
+    (0 until columns).map { j =>
+      val y = initialHeight + (i * brickHeight)
+      bricks += Brick(
+        Rect(gameField.x + (j * brickWidth), y, brickWidth, brickHeight),
+        getColor(y))
+    }
+  }
 
   def sprites(): Seq[Sprite] = {
     bricks.map(_.sprite)
   }
 
   def hitTest(ball: Ball): Boolean = {
-    var hit = false
-
-    if (ball.position.y < lowerBound) {
-      bricks.foreach(brick => {
-        if (!hit && brick.contains(ball)) {
+    if (ball.position.y >= lowerBound)
+      false
+    else
+      bricks.find(_.contains(ball)) match {
+        case Some(brick) =>
           Sound.beep(brick.color)
           brick.reflect(ball)
-          removed += brick
-          hit = true
+          bricks -= brick
           scoreboard.increment(getPoints(brick.bounds().y))
-        }
-      })
-      bricks = bricks diff removed.distinct
-    }
-    hit
+          true
+        case None => false
+      }
   }
 
-  def hits: Int = removed.size
+  def hits: Int = (rows * columns) - bricks.size
 
   def isDestroyed: Boolean = bricks.isEmpty
 
