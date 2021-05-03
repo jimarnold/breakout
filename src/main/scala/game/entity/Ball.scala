@@ -9,6 +9,7 @@ class Ball(var position: Vector2, var direction: Vector2, gameField: Rect, wall:
   private val height = gameField.height / 80f
   private val halfHeight = height / 2f
   private val baseSpeed = gameField.height / 1.5f
+  private val speedIncrement = gameField.height / 10f
   private val sprite: Sprite = Sprite(position, width, height, wall.getColor(position.y))
 
   private var previousPosition = position
@@ -18,7 +19,6 @@ class Ball(var position: Vector2, var direction: Vector2, gameField: Rect, wall:
   private var lastEntity: EntityType = _
 
   def update(elapsed: Float): Unit = {
-    previousPosition = position
     position = position.plus(direction.mult(elapsed * speed))
     sprite.setPosition(position)
     sprite.setColor(wall.getColor(position.y))
@@ -32,6 +32,15 @@ class Ball(var position: Vector2, var direction: Vector2, gameField: Rect, wall:
     if (entityType != lastEntity) {
       direction = direction.reflect(normal).normalize()
       lastEntity = entityType
+      previousPosition = position
+    }
+  }
+
+  def redirect(v: Vector2, entityType: EntityType): Unit = {
+    if (entityType != lastEntity) {
+      direction = v.normalize()
+      lastEntity = entityType
+      previousPosition = position
     }
   }
 
@@ -48,15 +57,15 @@ class Ball(var position: Vector2, var direction: Vector2, gameField: Rect, wall:
   }
 
   def setSpeed(hits: Int): Unit = {
-    var modifier = 0
+    var modifier = 0f
     if (hits >= 4) {
-      modifier += 150
+      modifier += speedIncrement
     }
     if (hits >= 12) {
-      modifier += 150
+      modifier += speedIncrement
     }
     if (hasHitCeiling) {
-      modifier += 150
+      modifier += speedIncrement
     }
     speed = baseSpeed + modifier
   }

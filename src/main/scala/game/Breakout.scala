@@ -100,16 +100,12 @@ object Breakout {
   }
 
   def hitTest(): Unit = {
-    if (paddle.contains(ball)) {
-      paddle.reflect(ball)
+    if (paddle.hitTest(ball)) {
       Sound.paddleBeep()
       canHitBricks = true
     }
-    if (canHitBricks) {
-      val hitBrick = wall.hitTest(ball)
-      if (hitBrick) {
-        canHitBricks = false
-      }
+    if (canHitBricks && wall.hitTest(ball)) {
+      canHitBricks = false
     }
     sides.hitTest(ball) match {
       case SideHitResult.Side =>

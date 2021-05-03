@@ -53,6 +53,15 @@ case class Vector2(x: Float, y: Float) {
     Vector2(x * cs - y * sn, x * sn + y * cs)
   }
 
+  def rotateCounterClockwise(degrees: Float): Vector2 = {
+    rotate(-degrees)
+  }
+
+  def angle(): Double = {
+    // angle from positive x axis
+    Math.toDegrees(Math.atan2(y, x))
+  }
+
   def angleBetween(v: Vector2): Double = {
     val dot = this.dot(v)
     val mag1 = this.magnitude()

@@ -1,5 +1,6 @@
 package game.entity
 
+import game.Breakout.{ball, paddle}
 import game.graphics.{Color, Sprite}
 import mafs.{Rect, Vector2}
 
@@ -31,50 +32,93 @@ case class Paddle(initialPosition: Vector2, gameField: Rect) extends Hittable {
     List(sprite)
   }
 
+  def hitTest(ball: Ball): Boolean = {
+    if (contains(ball)) {
+      reflect(ball)
+      true
+    } else {
+      false
+    }
+  }
+
   def reflect(ball: Ball): Unit = {
     val bounds: Rect = this.bounds()
     val incomingLine = ball.progressLine()
     val halfWidth = bounds.width / 2f
+    val quarterWidth = bounds.width / 4f
 
-    val normal = if (incomingLine.p2.x >= bounds.x + halfWidth && incomingLine.p1.x >= incomingLine.p2.x) {
-      // coming from the right, hitting right, will bounce back
-      //
-      //             ^ v
-      //            / /
-      //           / /
-      //           *
-      //    ---------
-      //
-      Vector2(1, 1)
-    } else if (incomingLine.p2.x <= bounds.x + halfWidth && incomingLine.p1.x <= incomingLine.p2.x) {
-      // coming from the left, hitting left, will bounce back
-      //
-      // v ^
-      //  \ \
-      //   \ \
-      //     *
-      //    ---------
-      //
-      Vector2(1, -1)
+    val normal = if (incomingLine.p1.x >= incomingLine.p2.x) {
+      // coming from the right
+      if (incomingLine.p2.x >= bounds.x + (bounds.width - quarterWidth)) {
+        // hitting right edge, will bounce back at more aggressive angle
+        //
+        //             v
+        //            /
+        //           /
+        // _________*---->
+        //
+        Vector2(0f, -1f).rotate(60f)
+      } else if (incomingLine.p2.x >= bounds.x + halfWidth) {
+        // hitting right of center, will bounce back
+        //
+        //             ^ v
+        //            / /
+        //           / /
+        //           *
+        //    ---------
+        //
+        Vector2(0f, -1f).rotate(45f)
+      } else {
+        // hitting left of center, will bounce forward
+        //
+        //     ^     v
+        //      \   /
+        //       \ /
+        //        *
+        // ---------
+        //
+        Vector2(-1f, 0f).rotate(45f)
+      }
     } else {
-      // will bounce forward
-      //
-      //     v     ^
-      //      \   /
-      //       \ /
-      //        *
-      // ---------
-      //
-      Vector2(1, 0)
+      // coming from the left
+      if (incomingLine.p2.x <= bounds.x + quarterWidth) {
+        // hitting left edge, will bounce back at more aggressive angle
+        //
+        //   v
+        //    \
+        //     \
+        // <--- *_________
+        //
+        Vector2(-1f, 0f).rotate(30f)
+      } else if (incomingLine.p2.x <= bounds.x + halfWidth) {
+        // hitting left of center, will bounce back
+        //
+        // v ^
+        //  \ \
+        //   \ \
+        //     *
+        //    ---------
+        //
+        Vector2(-1f, 0f).rotate(45f)
+      } else {
+        // hitting right of center, will bounce forward
+        //
+        //     v     ^
+        //      \   /
+        //       \ /
+        //        *
+        // ---------
+        //
+        Vector2(0f, -1f).rotate(45f)
+      }
     }
-    ball.bounce(normal, EntityType.Paddle)
+
+    ball.redirect(normal, EntityType.Paddle)
   }
 
   def hitCeiling(): Unit = {
     sprite.setWidth(minWidth)
   }
 
-  def bounds(): Rect = {
-    sprite.bounds
-  }
+  def bounds(): Rect = sprite.bounds
 }
