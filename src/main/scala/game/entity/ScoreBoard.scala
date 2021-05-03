@@ -3,31 +3,8 @@ package game.entity
 import game.graphics.{Color, Sprite}
 import mafs.{Rect, Vector2}
 
-case class Digit(position: Vector2, segments: Seq[Rect]) {
-  var sprites: Seq[Sprite] = toSprites(segments)
-
-  def set(segments: Seq[Rect]): Unit = {
-    this.sprites = toSprites(segments)
-  }
-
-  def toSprites(segments: Seq[Rect]): Seq[Sprite] = {
-    segments.map(s => {
-      Sprite(s.translate(position), Color.grey)
-    })
-  }
-}
-
 class ScoreBoard {
-  val zero = List(Segment.top, Segment.upperLeft, Segment.upperRight, Segment.lowerLeft, Segment.lowerRight, Segment.bottom)
-  val one = List(Segment.upperMiddle, Segment.lowerMiddle)
-  val two = List(Segment.top, Segment.upperRight, Segment.middle, Segment.lowerLeft, Segment.bottom)
-  val three = List(Segment.top, Segment.upperRight, Segment.middle, Segment.lowerRight, Segment.bottom)
-  val four = List(Segment.upperLeft, Segment.upperRight, Segment.middle, Segment.lowerRight)
-  val five = List(Segment.top, Segment.upperLeft, Segment.middle, Segment.lowerRight, Segment.bottom)
-  val six = List(Segment.top, Segment.upperLeft, Segment.middle, Segment.lowerLeft, Segment.lowerRight, Segment.bottom)
-  val seven = List(Segment.top, Segment.upperRight, Segment.lowerRight)
-  val eight = List(Segment.top, Segment.upperLeft, Segment.upperRight, Segment.middle, Segment.lowerLeft, Segment.lowerRight, Segment.bottom)
-  val nine = List(Segment.top, Segment.upperLeft, Segment.upperRight, Segment.middle, Segment.lowerRight)
+  import game.entity.Number._
 
   private val numbers = Array(
     zero,
@@ -69,7 +46,21 @@ class ScoreBoard {
   }
 }
 
-object Segment {
+case class Digit(position: Vector2, segments: Seq[Rect]) {
+  var sprites: Seq[Sprite] = toSprites(segments)
+
+  def set(segments: Seq[Rect]): Unit = {
+    this.sprites = toSprites(segments)
+  }
+
+  def toSprites(segments: Seq[Rect]): Seq[Sprite] = {
+    segments.map(s => {
+      Sprite(s.translate(position), Color.grey)
+    })
+  }
+}
+
+object Number {
   private val width = 80
   private val height = 40
   private val halfHeight = height / 2
@@ -78,13 +69,24 @@ object Segment {
   private val halfNarrow = narrow / 2
   private val wide = narrow * 3
 
-  val top: Rect = Rect(0, 0, width, narrow)
-  val upperLeft: Rect = Rect(0, 0, wide, halfHeight + halfNarrow)
-  val upperMiddle: Rect = Rect(halfWidth, 0, wide, halfHeight)
-  val upperRight: Rect = Rect(width - wide, 0, wide, halfHeight + halfNarrow)
-  val middle: Rect = Rect(wide, halfHeight - halfNarrow, width - wide, narrow)
-  val lowerLeft: Rect = Rect(0, halfHeight - halfNarrow, wide, halfHeight + halfNarrow)
-  val lowerMiddle: Rect = Rect(halfWidth, halfHeight, wide, halfHeight)
-  val lowerRight: Rect = Rect(width - wide, halfHeight - halfNarrow, wide, halfHeight + halfNarrow)
-  val bottom: Rect = Rect(0, height - narrow, width, narrow)
+  private val top = Rect(0, 0, width, narrow)
+  private val upperLeft = Rect(0, 0, wide, halfHeight + halfNarrow)
+  private val upperMiddle = Rect(halfWidth, 0, wide, halfHeight)
+  private val upperRight = Rect(width - wide, 0, wide, halfHeight + halfNarrow)
+  private val middle = Rect(wide, halfHeight - halfNarrow, width - wide, narrow)
+  private val lowerLeft = Rect(0, halfHeight - halfNarrow, wide, halfHeight + halfNarrow)
+  private val lowerMiddle = Rect(halfWidth, halfHeight, wide, halfHeight)
+  private val lowerRight = Rect(width - wide, halfHeight - halfNarrow, wide, halfHeight + halfNarrow)
+  private val bottom = Rect(0, height - narrow, width, narrow)
+
+  val zero = Seq(top, upperLeft, upperRight, lowerLeft, lowerRight, bottom)
+  val one = Seq(upperMiddle, lowerMiddle)
+  val two = Seq(top, upperRight, middle, lowerLeft, bottom)
+  val three = Seq(top, upperRight, middle, lowerRight, bottom)
+  val four = Seq(upperLeft, upperRight, middle, lowerRight)
+  val five = Seq(top, upperLeft, middle, lowerRight, bottom)
+  val six = Seq(top, upperLeft, middle, lowerLeft, lowerRight, bottom)
+  val seven = Seq(top, upperRight, lowerRight)
+  val eight = Seq(top, upperLeft, upperRight, middle, lowerLeft, lowerRight, bottom)
+  val nine = Seq(top, upperLeft, upperRight, middle, lowerRight)
 }
