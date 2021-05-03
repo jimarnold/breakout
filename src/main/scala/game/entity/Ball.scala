@@ -8,8 +8,8 @@ class Ball(var position: Vector2, var direction: Vector2, gameField: Rect, wall:
   private val halfWidth = width / 2f
   private val height = gameField.height / 80f
   private val halfHeight = height / 2f
-  private val baseSpeed = gameField.height / 1.5f
-  private val speedIncrement = gameField.height / 10f
+  private val baseSpeed = gameField.height / 1.3f
+  private val speedIncrement = gameField.height / 5f
   private val sprite: Sprite = Sprite(position, width, height, wall.getColor(position.y))
 
   private var previousPosition = position
@@ -29,6 +29,9 @@ class Ball(var position: Vector2, var direction: Vector2, gameField: Rect, wall:
   }
 
   def bounce(normal: Vector2, entityType: EntityType): Unit = {
+    if (entityType == EntityType.Ceiling) {
+      hasHitCeiling = true
+    }
     if (entityType != lastEntity) {
       direction = direction.reflect(normal).normalize()
       lastEntity = entityType
@@ -50,10 +53,6 @@ class Ball(var position: Vector2, var direction: Vector2, gameField: Rect, wall:
 
   def progressLine(): Line = {
     Line(previousPosition, position)
-  }
-
-  def hitCeiling(): Unit = {
-    hasHitCeiling = true
   }
 
   def setSpeed(hits: Int): Unit = {

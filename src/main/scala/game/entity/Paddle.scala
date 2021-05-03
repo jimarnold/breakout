@@ -1,6 +1,7 @@
 package game.entity
 
 import game.Breakout.{ball, paddle}
+import game.audio.Sound
 import game.graphics.{Color, Sprite}
 import mafs.{Rect, Vector2}
 
@@ -34,6 +35,7 @@ case class Paddle(initialPosition: Vector2, gameField: Rect) extends Hittable {
 
   def hitTest(ball: Ball): Boolean = {
     if (contains(ball)) {
+      Sound.paddleBeep()
       reflect(ball)
       true
     } else {

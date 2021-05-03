@@ -24,7 +24,6 @@ object Breakout {
   private var ball: Ball              = _
   private var scoreboard: ScoreBoard  = _
   private var lastTick                = 0L
-  private var lives                   = 5
   private var canHitBricks            = true
   private var paused                  = true
   private var playing                 = false
@@ -101,7 +100,6 @@ object Breakout {
 
   def hitTest(): Unit = {
     if (paddle.hitTest(ball)) {
-      Sound.paddleBeep()
       canHitBricks = true
     }
     if (canHitBricks && wall.hitTest(ball)) {
@@ -112,7 +110,6 @@ object Breakout {
         canHitBricks = true
       case SideHitResult.Ceiling =>
         canHitBricks = true
-        ball.hitCeiling()
         paddle.hitCeiling()
       case _ =>
         ()
@@ -121,11 +118,10 @@ object Breakout {
 
   def checkWinOrLose(): Unit = {
     if (ball.position.y >= HEIGHT) {
-      lives-= 1
-      scoreboard.setLives(lives)
+      scoreboard.lifeLost()
       newBall()
     }
-    if (lives == 0 || wall.isDestroyed) {
+    if (scoreboard.livesRemaining == 0 || wall.isDestroyed) {
       ball.hide()
       paused = true
       playing = false
@@ -168,9 +164,7 @@ object Breakout {
   }
 
   private def initEntities(): Unit = {
-    lives = 5
     scoreboard = new ScoreBoard
-    scoreboard.setLives(lives)
     sides = new Sides(WIDTH, HEIGHT)
     val gameField = Rect(sides.width, sides.width * 3, WIDTH - (sides.width * 2), HEIGHT - sides.width)
     wall = new Wall(gameField, scoreboard)

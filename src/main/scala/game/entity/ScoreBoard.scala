@@ -1,6 +1,5 @@
 package game.entity
 
-import game.graphics
 import game.graphics.{Color, Sprite}
 import mafs.{Rect, Vector2}
 
@@ -13,7 +12,7 @@ case class Digit(position: Vector2, segments: Seq[Rect]) {
 
   def toSprites(segments: Seq[Rect]): Seq[Sprite] = {
     segments.map(s => {
-      graphics.Sprite(s.translate(position), Color.grey)
+      Sprite(s.translate(position), Color.grey)
     })
   }
 }
@@ -30,50 +29,43 @@ class ScoreBoard {
   val eight = List(Segment.top, Segment.upperLeft, Segment.upperRight, Segment.middle, Segment.lowerLeft, Segment.lowerRight, Segment.bottom)
   val nine = List(Segment.top, Segment.upperLeft, Segment.upperRight, Segment.middle, Segment.lowerRight)
 
-  val numbers = Map(
-    '0' -> zero,
-    '1' -> one,
-    '2' -> two,
-    '3' -> three,
-    '4' -> four,
-    '5' -> five,
-    '6' -> six,
-    '7' -> seven,
-    '8' -> eight,
-    '9' -> nine)
+  private val numbers = Array(
+    zero,
+    one,
+    two,
+    three,
+    four,
+    five,
+    six,
+    seven,
+    eight,
+    nine)
 
-  val first: Digit = Digit(Vector2(100, 10), zero)
-  val second: Digit = Digit(Vector2(200, 10), zero)
-  val third: Digit = Digit(Vector2(300, 10), zero)
-  val lives: Digit = Digit(Vector2(600, 10), five)
+  private val firstDigit = Digit(Vector2(100, 10), zero)
+  private val secondDigit = Digit(Vector2(200, 10), zero)
+  private val thirdDigit = Digit(Vector2(300, 10), zero)
+  private val lifeDigit = Digit(Vector2(600, 10), five)
+
   var score = 0
+  var livesRemaining = 5
+
+  def lifeLost(): Unit = {
+    livesRemaining -= 1
+    lifeDigit.set(numbers(livesRemaining))
+  }
 
   def increment(amount: Int): Unit = {
     score += amount
-    val scoreString = score.toString
-    if (scoreString.length == 1) {
-      third.set(numbers.getOrElse(scoreString.charAt(0), zero))
-    }
-    if (scoreString.length == 2) {
-      second.set(numbers.getOrElse(scoreString.charAt(0), zero))
-      third.set(numbers.getOrElse(scoreString.charAt(1), zero))
-    }
-    if (scoreString.length == 3) {
-      first.set(numbers.getOrElse(scoreString.charAt(0), zero))
-      second.set(numbers.getOrElse(scoreString.charAt(1), zero))
-      third.set(numbers.getOrElse(scoreString.charAt(2), zero))
-    }
-  }
-
-  def setLives(count: Int): Unit = {
-    lives.set(numbers.getOrElse(count.toString.charAt(0), zero))
+    firstDigit.set(numbers((score / 100) % 10))
+    secondDigit.set(numbers((score / 10) % 10))
+    thirdDigit.set(numbers(score % 10))
   }
 
   def sprites(): Seq[Sprite] = {
-    first.sprites ++
-    second.sprites ++
-    third.sprites ++
-    lives.sprites
+    firstDigit.sprites ++
+    secondDigit.sprites ++
+    thirdDigit.sprites ++
+    lifeDigit.sprites
   }
 }
 
