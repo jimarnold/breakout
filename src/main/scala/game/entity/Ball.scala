@@ -7,7 +7,7 @@ class Ball(var position: Vector2, var direction: Vector2, gameField: Rect, wall:
   private val width = gameField.width / 80f
   private val height = gameField.width / 80f
   private val baseSpeed = gameField.height / 1.4f
-  private val speedIncrement = gameField.height / 3.5f
+  private val speedIncrement = gameField.height / 4.5f
   private val sprite: Sprite = Sprite(position, width, height, wall.getColor(position.y))
 
   private var previousPosition = position

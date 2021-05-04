@@ -1,15 +1,14 @@
 package game.entity
 
-import game.Breakout.{ball, paddle}
 import game.audio.Sound
 import game.graphics.{Color, Sprite}
 import mafs.{Rect, Vector2}
 
 case class Paddle(initialPosition: Vector2, gameField: Rect) extends Hittable {
-  private val initialWidth = gameField.width / 8f
+  private val initialWidth = gameField.width / 10f
   private val height = gameField.height / 50f
   private val sprite = Sprite(initialPosition, initialWidth, height, Color.paddle)
-  private val minWidth = initialWidth - (initialWidth / 3f)
+  private val minWidth = initialWidth - (initialWidth / 4f)
   val sprites = Seq(sprite)
 
   def update(elapsed: Float, x: Int): Unit = {
@@ -44,11 +43,11 @@ case class Paddle(initialPosition: Vector2, gameField: Rect) extends Hittable {
     val bounds: Rect = this.bounds()
     val incomingLine = ball.progressLine()
     val halfWidth = bounds.width / 2f
-    val quarterWidth = bounds.width / 4f
+    val eighthWidth = bounds.width / 8f
 
     val direction = if (incomingLine.p1.x >= incomingLine.p2.x) {
       // coming from the right
-      if (incomingLine.p2.x >= bounds.x + (bounds.width - quarterWidth)) {
+      if (incomingLine.p2.x >= bounds.x + (bounds.width - eighthWidth)) {
         // hitting right edge, will bounce back at more aggressive angle
         //
         //             v
@@ -80,7 +79,7 @@ case class Paddle(initialPosition: Vector2, gameField: Rect) extends Hittable {
       }
     } else {
       // coming from the left
-      if (incomingLine.p2.x <= bounds.x + quarterWidth) {
+      if (incomingLine.p2.x <= bounds.x + eighthWidth) {
         // hitting left edge, will bounce back at more aggressive angle
         //
         //   v
