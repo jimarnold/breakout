@@ -14,10 +14,11 @@ final case class Rect(topLeft: Vector2, width: Float, height: Float) {
   }
 
   def isOverlapping(other: Rect): Boolean =  {
-    (topRight.y <= other.bottomLeft.y) &&
-    (bottomLeft.y >= other.topRight.y) &&
-    (topRight.x >= other.bottomLeft.x) &&
-    (bottomLeft.x <= other.topRight.x)
+    val result = (topRight.y <= other.bottomLeft.y) &&
+      (bottomLeft.y >= other.topRight.y) &&
+      (topRight.x >= other.bottomLeft.x) &&
+      (bottomLeft.x <= other.topRight.x)
+    result
   }
 
   def intersectsWith(line: Line): Boolean = {
@@ -30,6 +31,8 @@ final case class Rect(topLeft: Vector2, width: Float, height: Float) {
   def x: Float = topLeft.x
   def y: Float = topLeft.y
   def xy: Vector2 = topLeft
+
+  override def toString: String = s"$x, $y, $width, $height"
 }
 
 object Rect {

@@ -5,11 +5,9 @@ import mafs.{Line, Rect, Vector2}
 
 class Ball(var position: Vector2, var direction: Vector2, gameField: Rect, wall: Wall) extends Hittable {
   private val width = gameField.width / 80f
-  private val halfWidth = width / 2f
-  private val height = gameField.height / 80f
-  private val halfHeight = height / 2f
+  private val height = gameField.width / 80f
   private val baseSpeed = gameField.height / 1.4f
-  private val speedIncrement = gameField.height / 5f
+  private val speedIncrement = gameField.height / 3.5f
   private val sprite: Sprite = Sprite(position, width, height, wall.getColor(position.y))
 
   private var previousPosition = position
@@ -48,7 +46,7 @@ class Ball(var position: Vector2, var direction: Vector2, gameField: Rect, wall:
   }
 
   def bounds(): Rect = {
-    Rect(position.x - halfWidth, position.y - halfHeight, width, height)
+    Rect(position, width, height)
   }
 
   def progressLine(): Line = {

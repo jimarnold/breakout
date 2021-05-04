@@ -17,6 +17,7 @@ object Breakout {
   private val HEIGHT: Int = 780
   private var window: Long = 0
   private val camera: Camera = Camera(WIDTH, HEIGHT)
+  private val updateTicks = 20
 
   private var wall: Wall              = _
   private var sides: Sides            = _
@@ -173,7 +174,7 @@ object Breakout {
   }
 
   def newBall(): Unit = {
-    val gameField = Rect(sides.width, sides.width * 3, WIDTH - (sides.width * 2), HEIGHT - sides.width)
+    val gameField = Rect(sides.width, sides.ceilingLowerY, WIDTH - (sides.width * 2), HEIGHT - sides.ceilingLowerY)
     ball = new Ball(Vector2(WIDTH - (sides.width * 2), wall.lowerBound), Vector2(-0.5f, 0.5f).normalize(), gameField, wall)
   }
 
@@ -182,13 +183,16 @@ object Breakout {
 
     while (!glfwWindowShouldClose(window)) {
       val now = System.nanoTime()
-      val elapsed = (now - lastTick).toFloat / 1000000000
+      val elapsed = (now - lastTick).toFloat / 1000000000f
       lastTick = now
 
-      glfwPollEvents()
-      clearScreen()
+      val tick = elapsed / updateTicks
+      for (_ <- 0 to updateTicks) {
+        glfwPollEvents()
+        onIdle(tick)
+      }
 
-      onIdle(elapsed)
+      clearScreen()
 
       Quad.render(allSprites, camera)
 

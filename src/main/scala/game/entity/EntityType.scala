@@ -4,7 +4,8 @@ case class EntityType(t: String)
 
 object EntityType {
   val Brick: EntityType = EntityType("brick")
-  val Sides: EntityType = EntityType("sides")
+  val LeftSide: EntityType = EntityType("left")
+  val RightSide: EntityType = EntityType("right")
   val Ceiling: EntityType = EntityType("ceiling")
   val Paddle: EntityType = EntityType("paddle")
 }

@@ -2,7 +2,6 @@ package game.entity
 
 import game.audio.Sound
 import game.graphics.{Color, Sprite}
-import game.graphics
 import mafs.{Rect, Vector2}
 
 object SideHitResult extends Enumeration {
@@ -14,6 +13,7 @@ import game.entity.SideHitResult.SideHitResult
 
 class Sides(val screenWidth: Int, val screenHeight: Int) {
   val width: Float = screenWidth / 20f
+  val ceilingLowerY: Float = (screenHeight / 12f) + width
   private val yOffset = screenHeight / 12f
   private val leftSide = Rect(0, yOffset, width, screenHeight)
   private val rightSide = Rect(screenWidth - width, yOffset, width, screenHeight)
@@ -24,13 +24,19 @@ class Sides(val screenWidth: Int, val screenHeight: Int) {
   val sprites = Seq(leftSprite, rightSprite, ceilingSprite)
 
   def hitTest(ball: Ball): SideHitResult = {
-    if (leftSide.intersectsWith(ball.progressLine()) ||
-      rightSide.intersectsWith(ball.progressLine())) {
+    val ballBounds = ball.bounds()
+    val progressLine = ball.progressLine()
+    if (leftSide.isOverlapping(ballBounds) || leftSide.intersectsWith(progressLine)) {
       val normal = Vector2(0, 1)
-      ball.bounce(normal, EntityType.Sides)
+      ball.bounce(normal, EntityType.LeftSide)
       Sound.sideBeep()
       SideHitResult.Side
-    } else if (ceiling.intersectsWith(ball.progressLine())) {
+    } else if (rightSide.isOverlapping(ballBounds) || rightSide.intersectsWith(progressLine)) {
+      val normal = Vector2(0, 1)
+      ball.bounce(normal, EntityType.RightSide)
+      Sound.sideBeep()
+      SideHitResult.Side
+    } else if (ceiling.isOverlapping(ballBounds) || ceiling.intersectsWith(progressLine)) {
       val normal = Vector2(1, 0)
       ball.bounce(normal, EntityType.Ceiling)
       Sound.topBeep()
