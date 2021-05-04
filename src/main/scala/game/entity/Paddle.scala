@@ -10,6 +10,7 @@ case class Paddle(initialPosition: Vector2, gameField: Rect) extends Hittable {
   private val height = gameField.height / 50f
   private val sprite = Sprite(initialPosition, initialWidth, height, Color.paddle)
   private val minWidth = initialWidth - (initialWidth / 3f)
+  val sprites = Seq(sprite)
 
   def update(elapsed: Float, x: Int): Unit = {
     if (x == sprite.position.x) {
@@ -29,10 +30,6 @@ case class Paddle(initialPosition: Vector2, gameField: Rect) extends Hittable {
     }
   }
 
-  def sprites(): Seq[Sprite] = {
-    List(sprite)
-  }
-
   def hitTest(ball: Ball): Boolean = {
     if (contains(ball)) {
       Sound.paddleBeep()
@@ -49,7 +46,7 @@ case class Paddle(initialPosition: Vector2, gameField: Rect) extends Hittable {
     val halfWidth = bounds.width / 2f
     val quarterWidth = bounds.width / 4f
 
-    val normal = if (incomingLine.p1.x >= incomingLine.p2.x) {
+    val direction = if (incomingLine.p1.x >= incomingLine.p2.x) {
       // coming from the right
       if (incomingLine.p2.x >= bounds.x + (bounds.width - quarterWidth)) {
         // hitting right edge, will bounce back at more aggressive angle
@@ -115,7 +112,7 @@ case class Paddle(initialPosition: Vector2, gameField: Rect) extends Hittable {
       }
     }
 
-    ball.redirect(normal, EntityType.Paddle)
+    ball.redirect(direction, EntityType.Paddle)
   }
 
   def hitCeiling(): Unit = {

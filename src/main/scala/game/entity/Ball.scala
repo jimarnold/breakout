@@ -8,7 +8,7 @@ class Ball(var position: Vector2, var direction: Vector2, gameField: Rect, wall:
   private val halfWidth = width / 2f
   private val height = gameField.height / 80f
   private val halfHeight = height / 2f
-  private val baseSpeed = gameField.height / 1.3f
+  private val baseSpeed = gameField.height / 1.4f
   private val speedIncrement = gameField.height / 5f
   private val sprite: Sprite = Sprite(position, width, height, wall.getColor(position.y))
 
@@ -35,8 +35,8 @@ class Ball(var position: Vector2, var direction: Vector2, gameField: Rect, wall:
     if (entityType != lastEntity) {
       direction = direction.reflect(normal).normalize()
       lastEntity = entityType
-      previousPosition = position
     }
+    previousPosition = position
   }
 
   def redirect(v: Vector2, entityType: EntityType): Unit = {
