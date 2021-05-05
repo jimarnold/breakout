@@ -23,12 +23,6 @@ object Quad {
     })
   }
 
-  def destroy(): Unit = {
-    vao.delete()
-    vbo.delete()
-    program.delete()
-  }
-
   def init(): Unit = {
     program = Program(VertexShader.Simple2D, FragmentShader.SimpleColor)
 
@@ -53,6 +47,12 @@ object Quad {
 
     this.viewMatrixUniform = glGetUniformLocation(program.ptr, "viewMatrix")
     this.colorUniform = glGetUniformLocation(program.ptr, "color")
+  }
+
+  def destroy(): Unit = {
+    vao.delete()
+    vbo.delete()
+    program.delete()
   }
 
   private def rect(left: Float, top: Float, width: Float, height: Float): Array[Float] = {

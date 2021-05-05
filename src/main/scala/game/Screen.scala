@@ -3,11 +3,17 @@ import mafs.Vector2
 import org.lwjgl.glfw.Callbacks.glfwFreeCallbacks
 import org.lwjgl.glfw.GLFW._
 import org.lwjgl.glfw.{GLFWErrorCallback, GLFWKeyCallback, GLFWVidMode}
-import org.lwjgl.opengl.GL11.GL_TRUE
+import org.lwjgl.opengl.GL
+import org.lwjgl.opengl.GL11._
 import org.lwjgl.system.MemoryUtil.NULL
 
-object GLFW {
+object Screen {
   var window: Long = 0L
+
+  def clear(): Unit = {
+    glClearColor(0.0f, 0.0f, 0.01f, 1)
+    glClear(GL_COLOR_BUFFER_BIT)
+  }
 
   def swapBuffers(): Unit = {
     glfwSwapBuffers(window)
@@ -32,11 +38,11 @@ object GLFW {
     Vector2(fbWidth(0), fbHeight(0))
   }
 
-  def windowShouldClose(): Boolean = {
+  def shouldClose(): Boolean = {
     glfwWindowShouldClose(window)
   }
 
-  def init(width: Int, height: Int): Long = {
+  def init(width: Int, height: Int): Unit = {
     // Setup an error callback. The default implementation
     // will print the error message in System.err.
     GLFWErrorCallback.createPrint(System.err).set()
@@ -75,7 +81,10 @@ object GLFW {
     glfwSwapInterval(1)
     glfwShowWindow(window)
 
-    window
+    GL.createCapabilities()
+
+    val size = frameBufferSize()
+    glViewport(0, 0, size.x.toInt, size.y.toInt)
   }
 
   def destroy(): Unit = {
@@ -86,7 +95,7 @@ object GLFW {
   }
 }
 
-
+// TODO: get the breakout-specific stuff out of here
 class KeyboardHandler() extends GLFWKeyCallback {
   def invoke(window: Long, key: Int, scancode: Int, action: Int, mods: Int) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)

@@ -5,8 +5,6 @@ import game.entity.{Ball, Paddle, ScoreBoard, SideHitResult, Sides, Wall}
 import game.graphics.Camera
 import game.graphics.renderers.Quad
 import mafs._
-import org.lwjgl.opengl.GL
-import org.lwjgl.opengl.GL11._
 
 object Breakout {
   private val WIDTH: Int = 1080
@@ -26,24 +24,15 @@ object Breakout {
   def run() {
     try {
       Sound.init()
+      Screen.init(WIDTH, HEIGHT)
+      Quad.init()
 
-      GLFW.init(WIDTH, HEIGHT)
-      initOpenGL()
       loop()
-
     }
     finally {
       Sound.destroy()
-      GLFW.destroy()
+      Screen.destroy()
     }
-  }
-
-  def initOpenGL(): Unit = {
-    GL.createCapabilities()
-
-    val size = GLFW.frameBufferSize()
-    glViewport(0, 0, size.x.toInt, size.y.toInt)
-    Quad.init()
   }
 
   def hitTest(): Unit = {
@@ -78,7 +67,7 @@ object Breakout {
 
   def onIdle(elapsed: Float): Unit = {
     if (playing && !paused) {
-      paddle.update(elapsed, GLFW.getCursorPos.x)
+      paddle.update(elapsed, Screen.getCursorPos.x)
       ball.update(elapsed)
 
       hitTest()
@@ -125,11 +114,11 @@ object Breakout {
 
     val timer = StepTimer(stepTime)
 
-    while (!GLFW.windowShouldClose()) {
+    while (!Screen.shouldClose()) {
       timer.tick()
 
       while (timer.hasTimeRemaining) {
-        GLFW.pollEvents()
+        Screen.pollEvents()
         onIdle(timer.getStepTime)
       }
 
@@ -138,16 +127,9 @@ object Breakout {
   }
 
   private def render(): Unit = {
-    clearScreen()
-
+    Screen.clear()
     Quad.render(allSprites, camera)
-
-    GLFW.swapBuffers()
-  }
-
-  private def clearScreen(): Unit = {
-    glClearColor(0.0f, 0.0f, 0.01f, 1)
-    glClear(GL_COLOR_BUFFER_BIT)
+    Screen.swapBuffers()
   }
 
   private def allSprites = {
