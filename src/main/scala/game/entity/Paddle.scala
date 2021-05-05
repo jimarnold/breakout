@@ -11,7 +11,7 @@ case class Paddle(initialPosition: Vector2, gameField: Rect) extends Hittable {
   private val minWidth = initialWidth - (initialWidth / 4f)
   val sprites = Seq(sprite)
 
-  def update(elapsed: Float, x: Int): Unit = {
+  def update(elapsed: Float, x: Float): Unit = {
     if (x == sprite.position.x) {
       return
     }
@@ -19,7 +19,7 @@ case class Paddle(initialPosition: Vector2, gameField: Rect) extends Hittable {
     sprite.setXPosition(constrainToGameField(x))
   }
 
-  private def constrainToGameField(x: Int): Float = {
+  private def constrainToGameField(x: Float): Float = {
     x match {
       case _ if x < gameField.x =>
         gameField.x

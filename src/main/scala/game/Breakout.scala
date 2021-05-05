@@ -5,17 +5,12 @@ import game.entity.{Ball, Paddle, ScoreBoard, SideHitResult, Sides, Wall}
 import game.graphics.Camera
 import game.graphics.renderers.Quad
 import mafs._
-import org.lwjgl.glfw._
-import org.lwjgl.opengl._
-import org.lwjgl.glfw.Callbacks._
-import org.lwjgl.glfw.GLFW._
+import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL11._
-import org.lwjgl.system.MemoryUtil._
 
 object Breakout {
   private val WIDTH: Int = 1080
   private val HEIGHT: Int = 780
-  private var window: Long = 0
   private val camera: Camera = Camera(WIDTH, HEIGHT)
   private val stepTime = 0.001f
 
@@ -32,69 +27,22 @@ object Breakout {
     try {
       Sound.init()
 
-      initGlfw()
+      GLFW.init(WIDTH, HEIGHT)
       initOpenGL()
       loop()
 
-      // Free the window callbacks and destroy the window
-      glfwFreeCallbacks(window)
-      glfwDestroyWindow(window)
     }
     finally {
       Sound.destroy()
-      // Terminate GLFW and free the error callback
-      glfwTerminate()
-      glfwSetErrorCallback(null).free()
+      GLFW.destroy()
     }
-  }
-
-  private def initGlfw() {
-    // Setup an error callback. The default implementation
-    // will print the error message in System.err.
-    GLFWErrorCallback.createPrint(System.err).set()
-
-    // Initialize GLFW. Most GLFW functions will not work before doing this.
-    if (!glfwInit())
-      throw new IllegalStateException("Unable to initialize GLFW")
-
-    glfwDefaultWindowHints() // optional, the current window hints are already the default
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4)
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1)
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE)
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE)
-    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE) // the window will stay hidden after creation
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE)
-
-    window = glfwCreateWindow(WIDTH, HEIGHT, "BREAKOUT", NULL, NULL)
-
-    if (window == NULL)
-      throw new RuntimeException("Failed to create the GLFW window!")
-
-    // Setup a key callback. It will be called every time a key is pressed, repeated or released.
-    val kb = new KeyboardHandler()
-    glfwSetKeyCallback(window, kb)
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN)
-
-    val monitor = glfwGetPrimaryMonitor()
-    val videoMode: GLFWVidMode = glfwGetVideoMode(monitor)
-
-    glfwSetWindowPos(
-      window,
-      (videoMode.width() - WIDTH) / 2,
-      (videoMode.height() - HEIGHT) / 2)
-
-    glfwMakeContextCurrent(window)
-    glfwSwapInterval(1)
-    glfwShowWindow(window)
   }
 
   def initOpenGL(): Unit = {
     GL.createCapabilities()
 
-    val fbWidth = new Array[Int](1)
-    val fbHeight = new Array[Int](1)
-    glfwGetFramebufferSize(window, fbWidth, fbHeight)
-    glViewport(0, 0, fbWidth(0), fbHeight(0))
+    val size = GLFW.frameBufferSize()
+    glViewport(0, 0, size.x.toInt, size.y.toInt)
     Quad.init()
   }
 
@@ -130,24 +78,19 @@ object Breakout {
 
   def onIdle(elapsed: Float): Unit = {
     if (playing && !paused) {
-      paddle.update(elapsed, getCursorXPosition)
+      paddle.update(elapsed, GLFW.getCursorPos.x)
       ball.update(elapsed)
-      ball.setSpeed(wall.hits)
 
       hitTest()
+
+      ball.setSpeed(wall.hits)
+
       checkWinOrLose()
     }
   }
 
   def togglePause(): Unit = {
     paused = !paused
-  }
-
-  val cursorX = new Array[Double](1)
-  val cursorY = new Array[Double](1)
-  private def getCursorXPosition = {
-    glfwGetCursorPos(window, cursorX, cursorY)
-    cursorX(0).toInt
   }
 
   def newGame(): Unit = {
@@ -182,12 +125,12 @@ object Breakout {
 
     val timer = StepTimer(stepTime)
 
-    while (!glfwWindowShouldClose(window)) {
+    while (!GLFW.windowShouldClose()) {
       timer.tick()
 
-      while (timer.timeRemaining()) {
-        glfwPollEvents()
-        onIdle(stepTime)
+      while (timer.hasTimeRemaining) {
+        GLFW.pollEvents()
+        onIdle(timer.getStepTime)
       }
 
       render()
@@ -199,7 +142,7 @@ object Breakout {
 
     Quad.render(allSprites, camera)
 
-    glfwSwapBuffers(window)
+    GLFW.swapBuffers()
   }
 
   private def clearScreen(): Unit = {
@@ -213,38 +156,5 @@ object Breakout {
     wall.sprites ++
     paddle.sprites ++
     ball.sprites
-  }
-}
-
-case class StepTimer(stepTime: Float) {
-  val NANOSECONDS: Float = 0.000000001f
-  var accumulator = 0f
-  var before: Float = System.nanoTime() * NANOSECONDS
-
-  def tick(): Unit = {
-    val now = System.nanoTime() * NANOSECONDS
-    val elapsed = now - before
-    before = now
-    accumulator += elapsed
-  }
-
-  def timeRemaining(): Boolean = {
-    if (accumulator >= stepTime) {
-      accumulator -= stepTime
-      true
-    } else {
-      false
-    }
-  }
-}
-
-class KeyboardHandler() extends GLFWKeyCallback {
-  def invoke(window: Long, key: Int, scancode: Int, action: Int, mods: Int) {
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
-      glfwSetWindowShouldClose(window, true)
-    if (key == GLFW_KEY_P && action == GLFW_RELEASE)
-      Breakout.togglePause()
-    if (key == GLFW_KEY_SPACE && action == GLFW_RELEASE)
-      Breakout.newGame()
   }
 }
