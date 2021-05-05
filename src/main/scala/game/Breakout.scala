@@ -17,14 +17,13 @@ object Breakout {
   private val HEIGHT: Int = 780
   private var window: Long = 0
   private val camera: Camera = Camera(WIDTH, HEIGHT)
-  private val updateTicks = 20
+  private val stepTime = 0.001f
 
   private var wall: Wall              = _
   private var sides: Sides            = _
   private var paddle: Paddle          = _
   private var ball: Ball              = _
   private var scoreboard: ScoreBoard  = _
-  private var lastTick                = 0L
   private var canHitBricks            = true
   private var paused                  = true
   private var playing                 = false
@@ -181,23 +180,26 @@ object Breakout {
   def loop() {
     introScreen()
 
-    while (!glfwWindowShouldClose(window)) {
-      val now = System.nanoTime()
-      val elapsed = (now - lastTick).toFloat / 1000000000f
-      lastTick = now
+    val timer = StepTimer(stepTime)
 
-      val tick = elapsed / updateTicks
-      for (_ <- 0 to updateTicks) {
+    while (!glfwWindowShouldClose(window)) {
+      timer.tick()
+
+      while (timer.timeRemaining()) {
         glfwPollEvents()
-        onIdle(tick)
+        onIdle(stepTime)
       }
 
-      clearScreen()
-
-      Quad.render(allSprites, camera)
-
-      glfwSwapBuffers(window)
+      render()
     }
+  }
+
+  private def render(): Unit = {
+    clearScreen()
+
+    Quad.render(allSprites, camera)
+
+    glfwSwapBuffers(window)
   }
 
   private def clearScreen(): Unit = {
@@ -211,6 +213,28 @@ object Breakout {
     wall.sprites ++
     paddle.sprites ++
     ball.sprites
+  }
+}
+
+case class StepTimer(stepTime: Float) {
+  val NANOSECONDS: Float = 0.000000001f
+  var accumulator = 0f
+  var before: Float = System.nanoTime() * NANOSECONDS
+
+  def tick(): Unit = {
+    val now = System.nanoTime() * NANOSECONDS
+    val elapsed = now - before
+    before = now
+    accumulator += elapsed
+  }
+
+  def timeRemaining(): Boolean = {
+    if (accumulator >= stepTime) {
+      accumulator -= stepTime
+      true
+    } else {
+      false
+    }
   }
 }
 

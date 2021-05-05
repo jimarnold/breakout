@@ -4,6 +4,7 @@ final case class Rect(topLeft: Vector2, width: Float, height: Float) {
   val topRight: Vector2 = Vector2(topLeft.x + width, topLeft.y)
   val bottomLeft: Vector2 = Vector2(topLeft.x, topLeft.y + height)
   val bottomRight: Vector2 = Vector2(topLeft.x + width, topLeft.y + height)
+  val center: Vector2 = Vector2(topLeft.x + (width / 2f), topLeft.y + (height / 2f))
 
   def translate(v: Vector2): Rect = {
     moveTo(Vector2(topLeft.x + v.x, topLeft.y + v.y))

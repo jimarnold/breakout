@@ -5,7 +5,7 @@ import game.graphics.{Color, Sprite}
 import mafs.{Rect, Vector2}
 
 case class Paddle(initialPosition: Vector2, gameField: Rect) extends Hittable {
-  private val initialWidth = gameField.width / 10f
+  private val initialWidth = gameField.width / 9f
   private val height = gameField.height / 50f
   private val sprite = Sprite(initialPosition, initialWidth, height, Color.paddle)
   private val minWidth = initialWidth - (initialWidth / 4f)
@@ -42,7 +42,6 @@ case class Paddle(initialPosition: Vector2, gameField: Rect) extends Hittable {
   def reflect(ball: Ball): Unit = {
     val bounds: Rect = this.bounds()
     val incomingLine = ball.progressLine()
-    val halfWidth = bounds.width / 2f
     val eighthWidth = bounds.width / 8f
 
     val direction = if (incomingLine.p1.x >= incomingLine.p2.x) {
@@ -56,7 +55,7 @@ case class Paddle(initialPosition: Vector2, gameField: Rect) extends Hittable {
         // _________*---->
         //
         Vector2(0f, -1f).rotate(60f)
-      } else if (incomingLine.p2.x >= bounds.x + halfWidth) {
+      } else if (incomingLine.p2.x >= bounds.center.x) {
         // hitting right of center, will bounce back
         //
         //             ^ v
@@ -88,7 +87,7 @@ case class Paddle(initialPosition: Vector2, gameField: Rect) extends Hittable {
         // <--- *_________
         //
         Vector2(-1f, 0f).rotate(30f)
-      } else if (incomingLine.p2.x <= bounds.x + halfWidth) {
+      } else if (incomingLine.p2.x <= bounds.center.x) {
         // hitting left of center, will bounce back
         //
         // v ^

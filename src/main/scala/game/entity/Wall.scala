@@ -10,8 +10,8 @@ class Wall(val gameField: Rect, val scoreboard: ScoreBoard) {
   private val rows = 6
   private val columns = 18
   private val brickWidth = gameField.width / columns
-  private val brickHeight = brickWidth / 3
-  private val initialHeight = gameField.y + brickHeight
+  private val brickHeight = brickWidth / 2.3f
+  private val initialHeight = gameField.y + (2 * brickHeight)
   private val bricks: ArrayBuffer[Brick] = ArrayBuffer.empty[Brick]
   val lowerBound: Float = (rows * brickHeight) + initialHeight
 
