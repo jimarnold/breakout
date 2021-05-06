@@ -1,7 +1,7 @@
 package game.entity
 
 import game.graphics.{Color, Sprite}
-import mafs.{Rect, Vector2}
+import mafs.{Point, Rect, Vector2}
 
 class ScoreBoard {
   import game.entity.Number._
@@ -18,10 +18,10 @@ class ScoreBoard {
     eight,
     nine)
 
-  private val firstDigit = Digit(Vector2(100, 10), zero)
-  private val secondDigit = Digit(Vector2(200, 10), zero)
-  private val thirdDigit = Digit(Vector2(300, 10), zero)
-  private val lifeDigit = Digit(Vector2(600, 10), five)
+  private val firstDigit = Digit(Point(100, 10), zero)
+  private val secondDigit = Digit(Point(200, 10), zero)
+  private val thirdDigit = Digit(Point(300, 10), zero)
+  private val lifeDigit = Digit(Point(600, 10), five)
 
   var score = 0
   var livesRemaining = 5
@@ -46,7 +46,7 @@ class ScoreBoard {
   }
 }
 
-case class Digit(position: Vector2, segments: Seq[Rect]) {
+case class Digit(position: Point, segments: Seq[Rect]) {
   var sprites: Seq[Sprite] = toSprites(segments)
 
   def set(segments: Seq[Rect]): Unit = {
@@ -55,7 +55,7 @@ case class Digit(position: Vector2, segments: Seq[Rect]) {
 
   def toSprites(segments: Seq[Rect]): Seq[Sprite] = {
     segments.map(s => {
-      Sprite(s.translate(position), Color.grey)
+      Sprite(s.translate(Vector2(position.x, position.y)), Color.grey)
     })
   }
 }

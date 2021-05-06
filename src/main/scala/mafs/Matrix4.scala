@@ -15,49 +15,36 @@ case class Matrix4(
       _0w, _1w, _2w, _3w)
   }
 
-  def mult (v: Vector4): Vector4 = {
-    Vector4(
-      _0x * v.x + _0y * v.y + _0z * v.z + _0w * v.w,
-      _1x * v.x + _1y * v.y + _1z * v.z + _1w * v.w,
-      _2x * v.x + _2y * v.y + _2z * v.z + _2w * v.w,
-      _3x * v.x + _3y * v.y + _3z * v.z + _3w * v.w
+  def mult (v: Vector2): Vector2 = {
+    Vector2(
+      _0x * v.x + _0y * v.y + _0z * 1f + _0w * 1f,
+      _1x * v.x + _1y * v.y + _1z * 1f + _1w * 1f
     )
   }
 
   def mult (b: Matrix4): Matrix4 = {
     Matrix4(
-      Vector4(
         _0x * b._0x + _1x * b._0y + _2x * b._0z + _3x * b._0w,
         _0y * b._0x + _1y * b._0y + _2y * b._0z + _3y * b._0w,
         _0z * b._0x + _1z * b._0y + _2z * b._0z + _3z * b._0w,
-        _0w * b._0x + _1w * b._0y + _2w * b._0z + _3w * b._0w),
-        Vector4(
+        _0w * b._0x + _1w * b._0y + _2w * b._0z + _3w * b._0w,
         _0x * b._1x + _1x * b._1y + _2x * b._1z + _3x * b._1w,
         _0y * b._1x + _1y * b._1y + _2y * b._1z + _3y * b._1w,
         _0z * b._1x + _1z * b._1y + _2z * b._1z + _3z * b._1w,
-        _0w * b._1x + _1w * b._1y + _2w * b._1z + _3w * b._1w),
-        Vector4(
+        _0w * b._1x + _1w * b._1y + _2w * b._1z + _3w * b._1w,
         _0x * b._2x + _1x * b._2y + _2x * b._2z + _3x * b._2w,
         _0y * b._2x + _1y * b._2y + _2y * b._2z + _3y * b._2w,
         _0z * b._2x + _1z * b._2y + _2z * b._2z + _3z * b._2w,
-        _0w * b._2x + _1w * b._2y + _2w * b._2z + _3w * b._2w),
-        Vector4(
+        _0w * b._2x + _1w * b._2y + _2w * b._2z + _3w * b._2w,
         _0x * b._3x + _1x * b._3y + _2x * b._3z + _3x * b._3w,
         _0y * b._3x + _1y * b._3y + _2y * b._3z + _3y * b._3w,
         _0z * b._3x + _1z * b._3y + _2z * b._3z + _3z * b._3w,
-        _0w * b._3x + _1w * b._3y + _2w * b._3z + _3w * b._3w)
+        _0w * b._3x + _1w * b._3y + _2w * b._3z + _3w * b._3w
     )
   }
 }
 
 object Matrix4 {
-  def apply(v0: Vector4, v1: Vector4, v2: Vector4, v3: Vector4): Matrix4 = Matrix4(
-    v0.x, v0.y, v0.z, v0.w,
-    v1.x, v1.y, v1.z, v1.w,
-    v2.x, v2.y, v2.z, v2.w,
-    v3.x, v3.y, v3.z, v3.w
-  )
-
   def identity(): Matrix4 = Matrix4(
     1f, 0f, 0f, 0f,
     0f, 1f, 0f, 0f,
@@ -76,8 +63,6 @@ object Matrix4 {
 
   def scale(v: Vector2): Matrix4 = scale(v.x, v.y)
 
-  def scale(v: Vector4): Matrix4 = scale(v.x, v.y, v.z, v.w)
-
   def translate(x: Float, y: Float, z: Float = 0f, w: Float = 1f): Matrix4 = Matrix4(
     1f, 0f, 0f, x,
     0f, 1f, 0f, y,
@@ -86,8 +71,6 @@ object Matrix4 {
   )
 
   def translate(v: Vector2): Matrix4 = translate(v.x, v.y)
-
-  def translate(v: Vector4): Matrix4 = translate(v.x, v.y, v.z, v.w)
 
   def ortho(left: Float, right: Float, bottom: Float, top: Float, near: Float, far: Float): Matrix4 =
     Matrix4(

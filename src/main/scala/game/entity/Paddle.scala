@@ -2,9 +2,9 @@ package game.entity
 
 import game.audio.Sound
 import game.graphics.{Color, Sprite}
-import mafs.{Rect, Vector2}
+import mafs.{Point, Rect, Vector2}
 
-case class Paddle(initialPosition: Vector2, gameField: Rect) extends Hittable {
+case class Paddle(initialPosition: Point, gameField: Rect) extends Hittable {
   private val initialWidth = gameField.width / 9f
   private val height = gameField.height / 50f
   private val sprite = Sprite(initialPosition, initialWidth, height, Color.paddle)

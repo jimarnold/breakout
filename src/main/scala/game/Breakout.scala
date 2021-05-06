@@ -100,13 +100,13 @@ object Breakout {
     sides = new Sides(WIDTH, HEIGHT)
     val gameField = Rect(sides.width, sides.width * 3, WIDTH - (sides.width * 2), HEIGHT - sides.width)
     wall = new Wall(gameField, scoreboard)
-    paddle = Paddle(Vector2(WIDTH / 2, HEIGHT - 20), gameField)
+    paddle = Paddle(Point(WIDTH / 2, HEIGHT - 20), gameField)
     newBall()
   }
 
   def newBall(): Unit = {
     val gameField = Rect(sides.width, sides.ceilingLowerY, WIDTH - (sides.width * 2), HEIGHT - sides.ceilingLowerY)
-    ball = new Ball(Vector2(WIDTH - (sides.width * 2), wall.lowerBound), Vector2(-0.5f, 0.5f).normalize(), gameField, wall)
+    ball = new Ball(Point(WIDTH - (sides.width * 2), wall.lowerBound), Vector2(-0.5f, 0.5f).normalize(), gameField, wall)
   }
 
   def loop() {

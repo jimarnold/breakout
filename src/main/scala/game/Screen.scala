@@ -1,5 +1,5 @@
 package game
-import mafs.Vector2
+import mafs.{Point, Vector2}
 import org.lwjgl.glfw.Callbacks.glfwFreeCallbacks
 import org.lwjgl.glfw.GLFW._
 import org.lwjgl.glfw.{GLFWErrorCallback, GLFWKeyCallback, GLFWVidMode}
@@ -26,9 +26,9 @@ object Screen {
   val cursorX = new Array[Double](1)
   val cursorY = new Array[Double](1)
 
-  def getCursorPos: Vector2 = {
+  def getCursorPos: Point = {
     glfwGetCursorPos(window, cursorX, cursorY)
-    Vector2(cursorX(0).toFloat, cursorY(0).toFloat)
+    Point(cursorX(0).toFloat, cursorY(0).toFloat)
   }
 
   def frameBufferSize(): Vector2 = {

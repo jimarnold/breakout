@@ -70,8 +70,6 @@ case class Vector2(x: Float, y: Float) {
     Math.toDegrees(Math.acos(dot / (mag1 * mag2)))
   }
 
-  def to4: Vector4 = Vector4(x, y, 0f, 1f)
-
   override def toString: String = {
     s"$x,$y"
   }

@@ -1,28 +1,28 @@
 package game.graphics
 
-import mafs.{Matrix4, Rect, Vector2}
+import mafs.{Matrix4, Point, Rect, Vector2}
 
 case class Sprite(var bounds: Rect, var color: Color) {
-  def position: Vector2 = bounds.topLeft
+  def position: Point = bounds.topLeft
 
   def translate(v: Vector2): Unit = {
     bounds = bounds.translate(v)
   }
 
-  def setPosition(v: Vector2): Unit = {
-    bounds = bounds.moveTo(v)
+  def setPosition(point: Point): Unit = {
+    bounds = bounds.moveTo(point)
   }
 
   def setXPosition(x: Float): Unit = {
-    bounds = bounds.moveTo(Vector2(x, position.y))
+    bounds = bounds.moveTo(Point(x, position.y))
   }
 
   def setWidth(width: Float): Unit = {
-    bounds = Rect(bounds.xy, width, bounds.height)
+    bounds = Rect(bounds.topLeft, width, bounds.height)
   }
 
   def setHeight(height: Float): Unit = {
-    bounds = Rect(bounds.xy, bounds.width, height)
+    bounds = Rect(bounds.topLeft, bounds.width, height)
   }
 
   def setColor(c: Color): Unit = {
@@ -36,5 +36,5 @@ case class Sprite(var bounds: Rect, var color: Color) {
 
 object Sprite {
   def apply(x: Float, y: Float, width: Float, height: Float, color: Color): Sprite = Sprite(Rect(x, y, width, height), color)
-  def apply(position: Vector2, width: Float, height: Float, color: Color): Sprite = Sprite(Rect(position, width, height), color)
+  def apply(position: Point, width: Float, height: Float, color: Color): Sprite = Sprite(Rect(position, width, height), color)
 }

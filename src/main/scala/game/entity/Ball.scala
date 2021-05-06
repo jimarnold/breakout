@@ -1,9 +1,9 @@
 package game.entity
 
 import game.graphics.Sprite
-import mafs.{Line, Rect, Vector2}
+import mafs.{Line, Rect, Vector2, Point}
 
-class Ball(var position: Vector2, var direction: Vector2, gameField: Rect, wall: Wall) extends Hittable {
+class Ball(var position: Point, var direction: Vector2, gameField: Rect, wall: Wall) extends Hittable {
   private val width = gameField.width / 80f
   private val height = gameField.width / 80f
   private val baseSpeed = gameField.height / 1.3f
@@ -17,7 +17,7 @@ class Ball(var position: Vector2, var direction: Vector2, gameField: Rect, wall:
   private var lastEntity: EntityType = _
 
   def update(elapsed: Float): Unit = {
-    position = position.plus(direction.mult(elapsed * speed))
+    position = position.translate(direction.mult(elapsed * speed))
     sprite.setPosition(position)
     sprite.setColor(wall.getColor(position.y))
   }
@@ -37,9 +37,9 @@ class Ball(var position: Vector2, var direction: Vector2, gameField: Rect, wall:
     previousPosition = position
   }
 
-  def redirect(v: Vector2, entityType: EntityType): Unit = {
+  def redirect(newDirection: Vector2, entityType: EntityType): Unit = {
     if (entityType != lastEntity) {
-      direction = v.normalize()
+      direction = newDirection.normalize()
       lastEntity = entityType
       previousPosition = position
     }

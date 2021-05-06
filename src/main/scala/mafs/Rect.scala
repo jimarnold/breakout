@@ -1,16 +1,16 @@
 package mafs
 
-final case class Rect(topLeft: Vector2, width: Float, height: Float) {
-  val topRight: Vector2 = Vector2(topLeft.x + width, topLeft.y)
-  val bottomLeft: Vector2 = Vector2(topLeft.x, topLeft.y + height)
-  val bottomRight: Vector2 = Vector2(topLeft.x + width, topLeft.y + height)
-  val center: Vector2 = Vector2(topLeft.x + (width / 2f), topLeft.y + (height / 2f))
+final case class Rect(topLeft: Point, width: Float, height: Float) {
+  val topRight: Point = Point(topLeft.x + width, topLeft.y)
+  val bottomLeft: Point = Point(topLeft.x, topLeft.y + height)
+  val bottomRight: Point = Point(topLeft.x + width, topLeft.y + height)
+  val center: Point = Point(topLeft.x + (width / 2f), topLeft.y + (height / 2f))
 
   def translate(v: Vector2): Rect = {
-    moveTo(Vector2(topLeft.x + v.x, topLeft.y + v.y))
+    moveTo(topLeft.translate(v))
   }
 
-  def moveTo(position: Vector2): Rect = {
+  def moveTo(position: Point): Rect = {
     Rect(position, width, height)
   }
 
@@ -31,11 +31,11 @@ final case class Rect(topLeft: Vector2, width: Float, height: Float) {
 
   def x: Float = topLeft.x
   def y: Float = topLeft.y
-  def xy: Vector2 = topLeft
+  def xy: Vector2 = Vector2(topLeft.x, topLeft.y)
 
   override def toString: String = s"$x, $y, $width, $height"
 }
 
 object Rect {
-  def apply(x: Float, y: Float, width: Float, height: Float): Rect = Rect(Vector2(x,y), width, height)
+  def apply(x: Float, y: Float, width: Float, height: Float): Rect = Rect(Point(x,y), width, height)
 }
