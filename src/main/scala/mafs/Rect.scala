@@ -22,13 +22,6 @@ final case class Rect(topLeft: Point, width: Float, height: Float) {
     result
   }
 
-  def intersectsWith(line: Line): Boolean = {
-    Line(topLeft, topRight).intersectsWith(line) ||
-    Line(topRight, bottomRight).intersectsWith(line) ||
-    Line(bottomRight, bottomLeft).intersectsWith(line) ||
-    Line(bottomLeft, topLeft).intersectsWith(line)
-  }
-
   def x: Float = topLeft.x
   def y: Float = topLeft.y
   def xy: Vector2 = Vector2(topLeft.x, topLeft.y)

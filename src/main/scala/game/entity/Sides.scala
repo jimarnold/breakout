@@ -25,18 +25,17 @@ class Sides(val screenWidth: Int, val screenHeight: Int) {
 
   def hitTest(ball: Ball): SideHitResult = {
     val ballBounds = ball.bounds()
-    val progressLine = ball.progressLine()
-    if (leftSide.isOverlapping(ballBounds) || leftSide.intersectsWith(progressLine)) {
+    if (leftSide.isOverlapping(ballBounds)) {
       val normal = Vector2(0, 1)
       ball.bounce(normal, EntityType.LeftSide)
       Sound.sideBeep()
       SideHitResult.Side
-    } else if (rightSide.isOverlapping(ballBounds) || rightSide.intersectsWith(progressLine)) {
+    } else if (rightSide.isOverlapping(ballBounds)) {
       val normal = Vector2(0, 1)
       ball.bounce(normal, EntityType.RightSide)
       Sound.sideBeep()
       SideHitResult.Side
-    } else if (ceiling.isOverlapping(ballBounds) || ceiling.intersectsWith(progressLine)) {
+    } else if (ceiling.isOverlapping(ballBounds)) {
       val normal = Vector2(1, 0)
       ball.bounce(normal, EntityType.Ceiling)
       Sound.topBeep()
