@@ -42,7 +42,7 @@ object Screen {
     glfwWindowShouldClose(window)
   }
 
-  def init(width: Int, height: Int): Unit = {
+  def init(width: Int, height: Int, onKeyUp : Int => Unit): Unit = {
     // Setup an error callback. The default implementation
     // will print the error message in System.err.
     GLFWErrorCallback.createPrint(System.err).set()
@@ -64,9 +64,7 @@ object Screen {
     if (window == NULL)
       throw new RuntimeException("Failed to create the GLFW window!")
 
-    // Setup a key callback. It will be called every time a key is pressed, repeated or released.
-    val kb = new KeyboardHandler()
-    glfwSetKeyCallback(window, kb)
+    glfwSetKeyCallback(window, KeyboardHandler(onKeyUp))
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN)
 
     val monitor = glfwGetPrimaryMonitor()
@@ -95,14 +93,14 @@ object Screen {
   }
 }
 
-// TODO: get the breakout-specific stuff out of here
-class KeyboardHandler() extends GLFWKeyCallback {
+case class KeyboardHandler(onKeyUp: Int => Unit) extends GLFWKeyCallback {
   def invoke(window: Long, key: Int, scancode: Int, action: Int, mods: Int) {
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
-      glfwSetWindowShouldClose(window, true)
-    if (key == GLFW_KEY_P && action == GLFW_RELEASE)
-      Breakout.togglePause()
-    if (key == GLFW_KEY_SPACE && action == GLFW_RELEASE)
-      Breakout.newGame()
+    if (action == GLFW_RELEASE) {
+      onKeyUp(key)
+
+      if (key == GLFW_KEY_ESCAPE) {
+        glfwSetWindowShouldClose(window, true)
+      }
+    }
   }
 }

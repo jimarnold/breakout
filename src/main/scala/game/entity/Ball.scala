@@ -7,7 +7,7 @@ class Ball(var position: Point, var direction: Vector2, gameField: Rect, wall: W
   private val width = gameField.width / 80f
   private val height = gameField.width / 80f
   private val baseSpeed = gameField.height / 1.3f
-  private val speedIncrement = gameField.height / 6f
+  private val speedIncrement = gameField.height / 5f
   private val sprite: Sprite = Sprite(position, width, height, wall.getColor(position.y))
 
   private var previousPosition = position
@@ -54,17 +54,19 @@ class Ball(var position: Point, var direction: Vector2, gameField: Rect, wall: W
   }
 
   def setSpeed(hits: Int): Unit = {
-    var modifier = 0f
+    speed = baseSpeed
     if (hits >= 4) {
-      modifier += speedIncrement
+      speed += speedIncrement
     }
     if (hits >= 12) {
-      modifier += speedIncrement
+      speed += speedIncrement
+    }
+    if (hits >= 30) {
+      speed += speedIncrement
     }
     if (hasHitCeiling) {
-      modifier += speedIncrement
+      speed += speedIncrement
     }
-    speed = baseSpeed + modifier
   }
 
   def hide(): Unit = {

@@ -6,10 +6,13 @@ import org.lwjgl.opengl.GL20._
 case class Program(ptr: Int) {
   def delete(): Unit = glDeleteProgram(ptr)
   def use(): Unit = glUseProgram(ptr)
+  def getUniform(name: String): Uniform = {
+    Uniform(glGetUniformLocation(ptr, name))
+  }
 }
 
 object Program {
-  def apply(vs: VertexShader, fs: FragmentShader): Program = {
+  def apply(vs: Shader, fs: Shader): Program = {
     val program = glCreateProgram()
 
     glAttachShader(program, vs.ptr)

@@ -1,24 +1,24 @@
 package game.graphics.renderers
 
-import game.graphics.{Camera, FragmentShader, Program, Sprite, VertexArray, VertexBuffer, VertexShader}
+import game.graphics.{Camera, FragmentShader, Program, Sprite, Uniform, VertexArray, VertexBuffer, VertexShader}
 import org.lwjgl.opengl.GL11.{GL_FLOAT, GL_TRIANGLES, glDrawArrays}
 import org.lwjgl.opengl.GL20._
 import org.lwjgl.system.MemoryUtil.NULL
 
-object Quad {
+object QuadRenderer {
   var program: Program = _
   var vbo: VertexBuffer = _
   var vao: VertexArray = _
-  var viewMatrixUniform: Int = 0
-  var colorUniform: Int = 0
+  var viewMatrixUniform: Uniform = _
+  var colorUniform: Uniform = _
 
   def render(sprites: Seq[Sprite], camera: Camera): Unit = {
     program.use()
     vao.bind()
 
     sprites.foreach(sprite => {
-      glUniformMatrix4fv(this.viewMatrixUniform, false, camera.view(sprite))
-      glUniform4fv(this.colorUniform, sprite.color.rgba)
+      this.viewMatrixUniform.loadMatrix(camera.view(sprite))
+      this.colorUniform.loadArray(sprite.color.rgba)
       glDrawArrays(GL_TRIANGLES, 0, 6)
     })
   }
@@ -26,17 +26,10 @@ object Quad {
   def init(): Unit = {
     program = Program(VertexShader.Simple2D, FragmentShader.SimpleColor)
 
-    val width = 1f
-    val height = 1f
-    val left = 0f
-    val top = 0f
-
-    val vertices = rect(left, top, width, height)
-
     vbo = VertexBuffer()
     vbo.bind()
 
-    vbo.load(vertices)
+    vbo.load(vertices())
 
     vao = VertexArray()
     vao.bind()
@@ -45,8 +38,8 @@ object Quad {
     glVertexAttribPointer(0, 2, GL_FLOAT, false, 0, NULL)
     vbo.unbind()
 
-    this.viewMatrixUniform = glGetUniformLocation(program.ptr, "viewMatrix")
-    this.colorUniform = glGetUniformLocation(program.ptr, "color")
+    this.viewMatrixUniform = program.getUniform("viewMatrix")
+    this.colorUniform = program.getUniform( "color")
   }
 
   def destroy(): Unit = {
@@ -55,7 +48,12 @@ object Quad {
     program.delete()
   }
 
-  private def rect(left: Float, top: Float, width: Float, height: Float): Array[Float] = {
+  private def vertices(): Array[Float] = {
+    val left = 0f
+    val top = 0f
+    val width = 1f
+    val height = 1f
+
     Array(
       left, top,
       left, top + height,

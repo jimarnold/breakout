@@ -13,7 +13,6 @@ import game.entity.SideHitResult.SideHitResult
 
 class Sides(val screenWidth: Int, val screenHeight: Int) {
   val width: Float = screenWidth / 20f
-  val ceilingLowerY: Float = (screenHeight / 12f) + width
   private val yOffset = screenHeight / 12f
   private val leftSide = Rect(0, yOffset, width, screenHeight)
   private val rightSide = Rect(screenWidth - width, yOffset, width, screenHeight)
@@ -21,7 +20,10 @@ class Sides(val screenWidth: Int, val screenHeight: Int) {
   private val leftSprite = Sprite(leftSide, Color.grey)
   private val rightSprite = Sprite(rightSide, Color.grey)
   private val ceilingSprite = Sprite(ceiling, Color.grey)
+
+  val ceilingLowerY: Float = (screenHeight / 12f) + width
   val sprites = Seq(leftSprite, rightSprite, ceilingSprite)
+  val innerArea: Rect = Rect(width, width * 3, screenWidth - (width * 2), screenHeight - width * 3)
 
   def hitTest(ball: Ball): SideHitResult = {
     val ballBounds = ball.bounds()
@@ -38,11 +40,10 @@ class Sides(val screenWidth: Int, val screenHeight: Int) {
     } else if (ceiling.isOverlapping(ballBounds)) {
       val normal = Vector2(1, 0)
       ball.bounce(normal, EntityType.Ceiling)
-      Sound.topBeep()
+      Sound.ceilingBeep()
       SideHitResult.Ceiling
     } else {
       SideHitResult.None
     }
   }
-
 }

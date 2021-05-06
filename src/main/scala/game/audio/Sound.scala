@@ -21,7 +21,7 @@ object Sound {
     play(Notes.D5)
   }
 
-  def topBeep(): Unit = {
+  def ceilingBeep(): Unit = {
     play(Notes.D5)
   }
 

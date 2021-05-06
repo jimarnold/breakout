@@ -1,6 +1,6 @@
 package game
 
-case class StepTimer(stepTime: Float) {
+case class StepTimer(interval: Float) {
   val NANOSECONDS: Float = 0.000000001f
   var accumulator = 0f
   var before: Float = System.nanoTime() * NANOSECONDS
@@ -17,12 +17,12 @@ case class StepTimer(stepTime: Float) {
   }
 
   def getStepTime: Float = {
-    val time = if (accumulator >= stepTime) {
-      stepTime
+    val delta = if (accumulator >= interval) {
+      interval
     } else {
       accumulator
     }
-    accumulator -= time
-    time
+    accumulator -= delta
+    delta
   }
 }

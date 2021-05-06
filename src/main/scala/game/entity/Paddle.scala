@@ -4,9 +4,10 @@ import game.audio.Sound
 import game.graphics.{Color, Sprite}
 import mafs.{Point, Rect, Vector2}
 
-case class Paddle(initialPosition: Point, gameField: Rect) extends Hittable {
+case class Paddle(gameField: Rect) extends Hittable {
   private val initialWidth = gameField.width / 9f
   private val height = gameField.height / 50f
+  private val initialPosition = Point(gameField.center.x, gameField.bottomLeft.y - height)
   private val sprite = Sprite(initialPosition, initialWidth, height, Color.paddle)
   private val minWidth = initialWidth - (initialWidth / 4f)
   val sprites = Seq(sprite)

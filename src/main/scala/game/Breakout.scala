@@ -1,9 +1,11 @@
 package game
 
+import org.lwjgl.glfw.GLFW._
+
 import game.audio.Sound
 import game.entity.{Ball, Paddle, ScoreBoard, SideHitResult, Sides, Wall}
 import game.graphics.Camera
-import game.graphics.renderers.Quad
+import game.graphics.renderers.QuadRenderer
 import mafs._
 
 object Breakout {
@@ -24,8 +26,8 @@ object Breakout {
   def run() {
     try {
       Sound.init()
-      Screen.init(WIDTH, HEIGHT)
-      Quad.init()
+      Screen.init(WIDTH, HEIGHT, onKeyUp)
+      QuadRenderer.init()
 
       loop()
     }
@@ -35,7 +37,50 @@ object Breakout {
     }
   }
 
-  def hitTest(): Unit = {
+  private def loop() {
+    introScreen()
+
+    val timer = StepTimer(stepTime)
+
+    while (!Screen.shouldClose()) {
+      timer.tick()
+
+      while (timer.hasTimeRemaining) {
+        Screen.pollEvents()
+        onIdle(timer.getStepTime)
+      }
+
+      render()
+    }
+  }
+
+  private def onIdle(elapsed: Float): Unit = {
+    if (playing && !paused) {
+      paddle.update(elapsed, Screen.getCursorPos.x)
+      ball.update(elapsed)
+
+      hitTest()
+
+      ball.setSpeed(wall.hits)
+
+      checkWinOrLose()
+    }
+  }
+
+  private def render(): Unit = {
+    Screen.clear()
+    QuadRenderer.render(allSprites, camera)
+    Screen.swapBuffers()
+  }
+
+  private def onKeyUp(key: Int): Unit = {
+    if (key == GLFW_KEY_P)
+      togglePause()
+    if (key == GLFW_KEY_SPACE)
+      newGame()
+  }
+
+  private def hitTest(): Unit = {
     if (paddle.hitTest(ball)) {
       canHitBricks = true
     }
@@ -53,7 +98,7 @@ object Breakout {
     }
   }
 
-  def checkWinOrLose(): Unit = {
+  private def checkWinOrLose(): Unit = {
     if (ball.position.y >= HEIGHT) {
       scoreboard.lifeLost()
       newBall()
@@ -65,30 +110,17 @@ object Breakout {
     }
   }
 
-  def onIdle(elapsed: Float): Unit = {
-    if (playing && !paused) {
-      paddle.update(elapsed, Screen.getCursorPos.x)
-      ball.update(elapsed)
-
-      hitTest()
-
-      ball.setSpeed(wall.hits)
-
-      checkWinOrLose()
-    }
-  }
-
-  def togglePause(): Unit = {
+  private def togglePause(): Unit = {
     paused = !paused
   }
 
-  def newGame(): Unit = {
+  private def newGame(): Unit = {
     initEntities()
     paused = false
     playing = true
   }
 
-  def introScreen(): Unit = {
+  private def introScreen(): Unit = {
     initEntities()
     ball.hide()
     paused = true
@@ -98,38 +130,13 @@ object Breakout {
   private def initEntities(): Unit = {
     scoreboard = new ScoreBoard
     sides = new Sides(WIDTH, HEIGHT)
-    val gameField = Rect(sides.width, sides.width * 3, WIDTH - (sides.width * 2), HEIGHT - sides.width)
-    wall = new Wall(gameField, scoreboard)
-    paddle = Paddle(Point(WIDTH / 2, HEIGHT - 20), gameField)
+    wall = new Wall(sides.innerArea, scoreboard)
+    paddle = Paddle(sides.innerArea)
     newBall()
   }
 
-  def newBall(): Unit = {
-    val gameField = Rect(sides.width, sides.ceilingLowerY, WIDTH - (sides.width * 2), HEIGHT - sides.ceilingLowerY)
-    ball = new Ball(Point(WIDTH - (sides.width * 2), wall.lowerBound), Vector2(-0.5f, 0.5f).normalize(), gameField, wall)
-  }
-
-  def loop() {
-    introScreen()
-
-    val timer = StepTimer(stepTime)
-
-    while (!Screen.shouldClose()) {
-      timer.tick()
-
-      while (timer.hasTimeRemaining) {
-        Screen.pollEvents()
-        onIdle(timer.getStepTime)
-      }
-
-      render()
-    }
-  }
-
-  private def render(): Unit = {
-    Screen.clear()
-    Quad.render(allSprites, camera)
-    Screen.swapBuffers()
+  private def newBall(): Unit = {
+    ball = new Ball(Point(WIDTH - (sides.width * 2), wall.lowerBound), Vector2(-0.5f, 0.5f).normalize(), sides.innerArea, wall)
   }
 
   private def allSprites = {
