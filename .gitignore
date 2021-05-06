@@ -1,4 +1,7 @@
 .bsp/
 .idea/
-project/
 target/
+src/main/.DS_Store
+src/.DS_Store
+release/
+.DS_Store
