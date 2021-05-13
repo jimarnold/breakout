@@ -12,7 +12,6 @@ object Breakout {
   private val WIDTH: Int = 1080
   private val HEIGHT: Int = 780
   private val camera: Camera = Camera(WIDTH, HEIGHT)
-  private val stepTime = 0.001f
 
   private var wall: Wall              = _
   private var sides: Sides            = _
@@ -40,7 +39,7 @@ object Breakout {
   private def loop() {
     introScreen()
 
-    val timer = StepTimer(stepTime)
+    val timer = StepTimer()
 
     while (!Screen.shouldClose()) {
       timer.tick()

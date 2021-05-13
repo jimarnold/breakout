@@ -1,19 +1,23 @@
 package game
 
-case class StepTimer(interval: Float) {
-  val NANOSECONDS: Float = 0.000000001f
-  var accumulator = 0f
-  var before: Float = System.nanoTime() * NANOSECONDS
+case class StepTimer() {
+  private val NANOSECONDS: Float = 0.000000001f
+  private val interval = 5000000L // 5ms
+  private var accumulator: Long = 0L
+  private var before: Long = System.nanoTime()
 
-  def tick(): Unit = {
-    val now = System.nanoTime() * NANOSECONDS
+  def tick(): Long = {
+    val now = System.nanoTime()
     val elapsed = now - before
+
     before = now
     accumulator += elapsed
+
+    elapsed
   }
 
   def hasTimeRemaining: Boolean = {
-    accumulator > 0f
+    accumulator > 0L
   }
 
   def getStepTime: Float = {
@@ -23,6 +27,7 @@ case class StepTimer(interval: Float) {
       accumulator
     }
     accumulator -= delta
-    delta
+
+    delta * NANOSECONDS
   }
 }
