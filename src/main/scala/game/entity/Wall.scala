@@ -24,7 +24,7 @@ class Wall(val gameField: Rect, val scoreboard: ScoreBoard) {
     }
   }
 
-  def sprites(): Seq[Sprite] = bricks.map(_.sprite)
+  def sprites(): Seq[Sprite] = bricks.map(_.sprite).toSeq
 
   def hitTest(ball: Ball): Boolean = {
     if (ball.position.y >= lowerBound)
