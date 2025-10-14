@@ -94,7 +94,7 @@ object Screen {
 }
 
 case class KeyboardHandler(onKeyUp: Int => Unit) extends GLFWKeyCallback {
-  def invoke(window: Long, key: Int, scancode: Int, action: Int, mods: Int) {
+  def invoke(window: Long, key: Int, scancode: Int, action: Int, mods: Int) = {
     if (action == GLFW_RELEASE) {
       onKeyUp(key)
 

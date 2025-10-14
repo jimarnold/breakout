@@ -22,7 +22,7 @@ object Breakout {
   private var paused                  = true
   private var playing                 = false
 
-  def run() {
+  def run() = {
     try {
       Sound.init()
       Screen.init(WIDTH, HEIGHT, onKeyUp)
@@ -36,7 +36,7 @@ object Breakout {
     }
   }
 
-  private def loop() {
+  private def loop() = {
     introScreen()
 
     val timer = StepTimer()
@@ -139,10 +139,10 @@ object Breakout {
   }
 
   private def allSprites = {
-    scoreboard.sprites ++
+    scoreboard.sprites() ++
     sides.sprites ++
-    wall.sprites ++
+    wall.sprites() ++
     paddle.sprites ++
-    ball.sprites
+    ball.sprites()
   }
 }
