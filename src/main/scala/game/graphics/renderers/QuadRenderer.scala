@@ -6,11 +6,11 @@ import org.lwjgl.opengl.GL20._
 import org.lwjgl.system.MemoryUtil.NULL
 
 object QuadRenderer {
-  var program: Program = _
-  var vbo: VertexBuffer = _
-  var vao: VertexArray = _
-  var viewMatrixUniform: Uniform = _
-  var colorUniform: Uniform = _
+  var program: Program = scala.compiletime.uninitialized
+  var vbo: VertexBuffer = scala.compiletime.uninitialized
+  var vao: VertexArray = scala.compiletime.uninitialized
+  var viewMatrixUniform: Uniform = scala.compiletime.uninitialized
+  var colorUniform: Uniform = scala.compiletime.uninitialized
 
   def render(sprites: Seq[Sprite], camera: Camera): Unit = {
     program.use()

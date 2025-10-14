@@ -13,11 +13,11 @@ object Breakout {
   private val HEIGHT: Int = 780
   private val camera: Camera = Camera(WIDTH, HEIGHT)
 
-  private var wall: Wall              = _
-  private var sides: Sides            = _
-  private var paddle: Paddle          = _
-  private var ball: Ball              = _
-  private var scoreboard: ScoreBoard  = _
+  private var wall: Wall              = scala.compiletime.uninitialized
+  private var sides: Sides            = scala.compiletime.uninitialized
+  private var paddle: Paddle          = scala.compiletime.uninitialized
+  private var ball: Ball              = scala.compiletime.uninitialized
+  private var scoreboard: ScoreBoard  = scala.compiletime.uninitialized
   private var canHitBricks            = true
   private var paused                  = true
   private var playing                 = false
