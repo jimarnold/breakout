@@ -59,21 +59,21 @@ case class Paddle(gameField: Rect) extends Hittable {
       } else if (incomingLine.p2.x >= bounds.center.x) {
         // hitting right of center, will bounce back
         //
-        //             ^ v
-        //            / /
-        //           / /
-        //           *
-        //    ---------
+        //          ^ v
+        //         / /
+        //        / /
+        //        *
+        // ---------
         //
         Vector2(0f, -1f).rotate(45f)
       } else {
         // hitting left of center, will bounce forward
         //
-        //     ^     v
-        //      \   /
-        //       \ /
-        //        *
-        // ---------
+        // ^     v
+        //  \   /
+        //   \ /
+        //    *
+        //   ---------
         //
         Vector2(-1f, 0f).rotate(45f)
       }

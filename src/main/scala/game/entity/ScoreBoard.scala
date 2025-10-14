@@ -61,6 +61,13 @@ case class Digit(position: Point, segments: Seq[Rect]) {
 }
 
 object Number {
+  // kind of like a nine segment display, eg '02743' would render something like this:
+  //  --    --   --         --
+  // |  |     |    |  |  |    |
+  // |  |  |--|    |  |--|  --|
+  // |  |  |       |     |    |
+  //  --    --     |        -- 
+  //  
   private val width = 80
   private val height = 40
   private val halfHeight = height / 2
