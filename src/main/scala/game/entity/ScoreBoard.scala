@@ -66,7 +66,7 @@ object Number {
   // |  |     |    |  |  |    |
   // |  |  |--|    |  |--|  --|
   // |  |  |       |     |    |
-  //  --    --     |        -- 
+  //  --    --              -- 
   //  
   private val width = 80
   private val height = 40
